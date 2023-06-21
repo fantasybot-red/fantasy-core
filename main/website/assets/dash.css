@@ -1,0 +1,53 @@
+#sever {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    display: grid;
+}
+
+#serverbox {
+    width: 100%;
+    justify-content: center;
+    background-color: #878787;
+    padding: 3px;
+    border-radius: 15px;
+}
+
+#servermain {
+    padding: 16px;
+    vertical-align: baseline;
+}
+
+#servernamebox {
+    border-radius: 15px;
+    background-color: #3a3a3a;
+}
+
+#servername {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: x-large;
+}
+
+#servericon {
+    max-width: 100%;
+    min-width: 100%;
+    background-color: #5f5f5f;
+    border-radius: 50%;
+}
+
+#servertexticon {
+    aspect-ratio: 1 / 1;
+    overflow: auto;
+    background-color: #5f5f5f;
+    border-radius: 50%;
+    margin-bottom: 4.78px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+
+#servertexticon span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 32px;
+}

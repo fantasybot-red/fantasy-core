@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>dash</title>
+    <link rel="stylesheet" href="/assets/dash.css"/>
+</head>
+<body>
+    <div id="sever">
+        <!-- icon -->
+        <!-- <a id="servermain" href="javascript:console.log(`hi`)">
+            <div id="serverbox">
+                <img src="/assets/bot_avatar.png" alt="" id="servericon">
+                <div class="center" id="servernamebox">
+                    <span id="servername">
+                        ${name}
+                    </span>
+                </div>
+            </div>
+        </a>-->
+        <!-- no icon -->
+        <!--<a id="servermain" href="javascript:console.log(`hi`)">
+            <div id="serverbox">
+                <div id="servertexticon"><span>1</span></div>
+                <div class="center" id="servernamebox">
+                    <span id="servername">
+                        hi
+                    </span>
+                </div>
+            </div>
+        </a>-->
+    </div>
+    <script>
+        let sdata= JSON.parse(getserver().responseText)
+        for (let i of sdata) {
+            let atag = document.createElement("a")
+            atag.id = "servermain"
+            atag.href = `javascript:alert("Comming Soon")`
+            let shotname = servernameicon(i.name)
+            let name = i.name
+            if (!i.icon) {
+                atag.innerHTML = `<div id="serverbox">
+                    <div id="servertexticon">
+                        <span>${shotname}</span>
+                    </div>
+                    <div class="center" id="servernamebox">
+                    <span id="servername">
+                        ${name}
+                    </span>
+                </div>
+                </div>`
+            } else {
+                atag.innerHTML = `<div id="serverbox">
+                <img src="${i.icon}" alt="" id="servericon">
+                <div class="center" id="servernamebox">
+                    <span id="servername">
+                        ${name}
+                    </span>
+                </div>
+                </div>`
+            }
+            document.getElementById("sever").appendChild(atag)
+        }
+        delete sdata
+    </script>
+</body>
+
+</html>

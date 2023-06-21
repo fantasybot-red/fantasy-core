@@ -1,0 +1,24 @@
+discord.py @ git+https://github.com/Rapptz/discord.py
+soundcloud-lib @ git+https://github.com/thedtvn/soundcloud-lib.git
+chiasenhac.py @ git+https://github.com/thedtvn/chiasenhac.py.git
+zingmp3py @ git+https://github.com/thedtvn/zingmp3py.git
+youtube_dl @ git+https://github.com/ytdl-org/youtube-dl
+cryptography
+spotipy2
+PyNaCl
+emoji
+python-dotenv
+redis
+aiohttp_session
+Pillow
+numpy
+statcord.py
+Jinja2
+beautifulsoup4
+psutil
+sentry-sdk
+
+# check code typing
+
+flake8
+bandit

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head {{ headattrs|safe }}>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {{ bothead|safe }}
+    <link rel="stylesheet" id="loadingcss" href="/assets/loading.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+    <link rel="stylesheet" href="/assets/main.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    {{ head|safe }}
+    <noscript>
+        <title>Fantasy Security</title>
+    </noscript>
+</head>
+<body>
+    <div id="loading">
+        <div class="scene">
+            <div class="plane">
+                <div class="cube cube--0">
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                </div>
+                <div class="shadow shadow--0"></div>
+                <div class="cube cube--1">
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                </div>
+                <div class="shadow shadow--1"></div>
+                <div class="cube cube--2">
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                </div>
+                <div class="shadow shadow--2"></div>
+                <div class="cube cube--3">
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                </div>
+                <div class="shadow shadow--3"></div>
+                <div class="cube cube--4">
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                </div>
+                <div class="shadow shadow--4"></div>
+                <div class="cube cube--5">
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                </div>
+                <div class="shadow shadow--5"></div>
+                <div class="cube cube--6">
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                </div>
+                <div class="shadow shadow--6"></div>
+                <div class="cube cube--7">
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                    <div class="cube__side"></div>
+                </div>
+                <div class="shadow shadow--7"></div>
+            </div>
+        </div>
+    </div>
+    <div id="root">
+        <header id="topnav">
+            <div class="logo">
+                <a href="/">
+                    <img src="/assets/bot_avatar.png" alt="" width="auto"/>
+                </a>
+            </div>
+            <div class="deskcss">
+                <nav>
+                    <ul class="hdd">
+                        <a href="/support">
+                            <li>Discord</li>
+                        </a>
+                        <a href="/invite">
+                            <li>Invite</li>
+                        </a>
+                        <a href="/login">
+                            <li id="lgb">Login</li>
+                        </a>
+                    </ul>
+                </nav>
+            </div>
+            <div class="mobiecss">
+                <button class="mobiebt">
+                    <span class="mobiicon material-symbols-outlined" id="mobiicon">menu</span>
+                </button>
+            </div>
+            <div id="mobidropbar" class="mobidropbar">
+                <a href="/support">
+                    <li>Discord</li>
+                </a>
+                <a href="/invite">
+                    <li>Invite</li>
+                </a>
+                <a href="/login">
+                    <li id="lgbmb">Login</li>
+                </a>
+            </div>
+        </header>
+        <main id="main" {{ bodyattrs|safe }}>
+            {{ body|safe }}
+        </main>
+    </div>
+    <noscript>
+        <iframe src="https://cdn.folody.xyz/fantasy%20cdn/nojs.html" frameborder="0"
+            style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:100%;width:100%;position:absolute;top:0%;left:0px;right:0px;bottom:0px"
+            height="100%" width="100%">
+        </iframe>
+    </noscript>
+    <script>
+        if (JSON.parse(getlogin().responseText).status) {
+            let userinfo = JSON.parse(getuser().responseText)
+            document.getElementById("lgb").innerHTML = `<span>${userinfo.username}#${userinfo.discriminator}</span> <img class="useravatar" src="${userinfo.avatar}" alt="" width="30" height="auto"></img>`
+            document.getElementById("lgbmb").innerHTML = `<span>${userinfo.username}#${userinfo.discriminator}</span> <img class="useravatar" src="${userinfo.avatar}" alt="" width="30" height="auto"></img>`
+            sidcheck()
+        }
+    </script>
+    <script src="/js/main.js"></script>
+</body>
+
+</html>
