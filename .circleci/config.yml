@@ -33,7 +33,7 @@ jobs:
       - checkout
       - run:
           name: Login To All
-          command: (sed -E -n 's/[^#]+/export &/ p' ./main/env.sh | sed 's/[ \t]*=[ \t]*/=/' | tr -d '"' | tr -d "'") > ./env.sh && . ./env.sh && rm ./env.sh && git config --global url."https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/"
+          command: (sed -E -n 's/[^#]+/export &/ p' ./main/.env | sed 's/[ \t]*=[ \t]*/=/' | tr -d '"' | tr -d "'") > ./env.sh && . ./env.sh && rm ./env.sh && git config --global url."https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/"
       - python/install-packages:
           pip-dependency-file: req.txt
           pkg-manager: pip
