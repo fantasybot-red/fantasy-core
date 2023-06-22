@@ -2,6 +2,11 @@ import io
 import aiohttp
 from PIL import Image, ImageDraw, ImageFont
 
+def truncate_str(str, max_len=30):
+  if len(str) <= max_len:
+    return str
+  else:
+    return str[:max_len - 3] + "..."
 
 async def rank_card(username, avatar, level, rank, current_xp, xp_color, next_level_xp):
     custom_background = "#36393f"
@@ -32,9 +37,12 @@ async def rank_card(username, avatar, level, rank, current_xp, xp_color, next_le
 
     ufont = ImageFont.truetype(font=f"./unity/Ubuntu-Regular.ttf", size=45)
     
-    d.text((260, 100), username, font=ufont, fill=(255, 255, 255, 128))
-    d.text((860, 130), f"{current_xp}/{next_level_xp} XP", font=font2, fill=(255, 255, 255, 128))
-    d.text((800, 50), f"LEVEL {level}", font=font, fill=(255, 255, 255, 128))
+    d.text((260, 100), truncate_str(username, max_len=15), font=ufont, fill=(255, 255, 255, 128))
+    d.text((890, 130), f"{current_xp}/{next_level_xp} XP", font=font2, fill=(255, 255, 255, 128))
+    x_df = 800
+    if len(f"LEVEL {level}") > 8:
+        x_df -= (len(f"LEVEL {level}") - 8) * 20
+    d.text((x_df, 50), f"LEVEL {level}", font=font, fill=(255, 255, 255, 128))
     d.text((260, 50), f"RANK #{rank}", font=font2, fill=(255, 255, 255, 128))
 
     buf = io.BytesIO()

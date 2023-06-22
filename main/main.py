@@ -200,7 +200,7 @@ async def afk(interaction: discord.Interaction, rest: str = "AFK"):
             await ctx.author.edit(nick=(ctx.author.global_name or ctx.author.name) + " [AFK]")
         except BaseException:
             pass
-    elif " [AFK]" in ctx.author.nick:
+    elif " [AFK]" not in ctx.author.nick:
         try:
             await ctx.author.edit(nick=ctx.author.nick + " [AFK]")
         except BaseException:
@@ -223,9 +223,10 @@ async def on_message(message: discord.Message):
 
     if message.guild is None:
         return
-    
-    asyncio.create_task(bot.process_commands(message), name=str(message.id))
 
+    if message.content == f"<@{bot.user.id}>" or message.content == f"<@!{bot.user.id}>":
+        await message.reply(f'**Hi tôi là {bot.user.mention} xin hay dùng `/` để dùng commands của tôi nhé nhé 😊**')
+    
     try:
         with database(f"./data/afk/{message.guild.id}.db", bot.db, True) as db:
             data = db["afklist"]

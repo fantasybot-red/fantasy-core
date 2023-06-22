@@ -22,6 +22,22 @@ class Level(commands.Cog):
         seting = setting.getsetting(message.guild.id, "level", self.bot.db)
         if seting is None:
             with database(f"./data/level/{message.guild.id}.db", self.bot.db) as db:
+                for i in db.get("channel_disable", []):
+                    if message.guild.get_channel(i) is None:
+                        out_ch = db["channel_disable"]
+                        out_ch.remove(i)
+                        db["channel_disable"] = out_ch
+                d_ch = db.get("channel_disable", [])
+                ctr = None
+                if message.channel.category is not None:
+                    ctr = message.channel.category.id
+                p_th_id = None
+                try:
+                   p_th_id = message.channel.parent_id 
+                except BaseException:
+                    pass
+                if message.channel.id in d_ch or ctr in d_ch or p_th_id in d_ch:
+                    return
                 odata = db.get(str(message.author.id), {"level": 0, "exp": 0})
                 if odata["exp"] >= 100:
                     odata["level"] += 1
@@ -62,7 +78,7 @@ class Level(commands.Cog):
         await ctx.send(embed=embed)
     
     @app_commands.command(name="add_level_role", description="Set role phần thưởng cho level.")
-    @app_commands.default_permissions(manage_roles=True)
+    @app_commands.default_permissions(manage_guild=True)
     async def add_level_role(self, interaction: discord.Interaction, level:app_commands.Range[int, 0, None], role: discord.Role):
         ctx = await Interactx(interaction)
         with database(f"./data/level/{ctx.guild.id}.db", self.bot.db) as db:
@@ -71,9 +87,10 @@ class Level(commands.Cog):
             if dbout.items():
                 db["level-role"] = dbout
         await ctx.send(f"**Đã set role {role.name} cho level {level}**")
+        
     
     @app_commands.command(name="remove_level_role", description="Xóa role phần thưởng cho level.")
-    @app_commands.default_permissions(manage_roles=True)
+    @app_commands.default_permissions(manage_guild=True)
     async def remove_level_role(self, interaction: discord.Interaction, level:app_commands.Range[int, 0, None]):
         ctx = await Interactx(interaction)
         with database(f"./data/level/{ctx.guild.id}.db", self.bot.db) as db:
@@ -90,7 +107,29 @@ class Level(commands.Cog):
             await ctx.send(f"**Đã xóa role của level {level}**")
         else:
             await ctx.send(f"**Bạn chưa set role cho level {level}**")
-            
+    
+    
+    @app_commands.command(name="level_channel_setting", description="Tắt/Bật level của một kênh nhất định.")
+    @app_commands.default_permissions(manage_guild=True)
+    @app_commands.choices(value=[
+    app_commands.Choice(name='Off', value=0),
+    app_commands.Choice(name='On', value=1)])
+    async def level_channel_setting(self, interaction: discord.Interaction, channel:discord.abc.GuildChannel, value: app_commands.Choice[int]):
+        ctx = await Interactx(interaction)
+        if setting.getsetting(ctx.guild.id, "level", self.bot.db) is None:
+            with database(f"./data/level/{ctx.guild.id}.db", self.bot.db) as db:
+                dbout = db.get("channel_disable", [])
+                if not value.value:
+                    dbout.append(channel.id)
+                else:
+                    dbout.remove(channel.id)
+                if dbout:
+                    db["channel_disable"] = dbout
+                elif db.get("channel_disable", None):
+                    del db["channel_disable"]
+            await ctx.send(f"**Đã {value.name} level của kênh {channel.mention}**")
+        else:
+            await ctx.send("Server này đã tắt hệ thống level")
         
     @app_commands.command(name="rank", description="Xem rank/level của bạn")
     @app_commands.describe(member="Member cần xem rank/level")
@@ -102,7 +141,7 @@ class Level(commands.Cog):
                 if not member.bot:
                     with database(f"./data/level/{ctx.guild.id}.db", self.bot.db) as db:
                         data = db.get(str(member.id), {"level": 0, "exp": 0})
-                    img = await rank_card(username=member.nick or member.name,
+                    img = await rank_card(username=member.nick or member.global_name or member.name,
                                         avatar=member.display_avatar.with_format(
                                             "png").url,
                                         level=data["level"],
