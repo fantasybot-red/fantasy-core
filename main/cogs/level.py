@@ -50,6 +50,16 @@ class Level(commands.Cog):
                                 db["level-role"] = dbout
                             elif db.get("level-role") is not None:
                                 del db["level-role"]
+                                
+    @app_commands.command(name="level_role_list", description="Xem danh sach level role")
+    async def level_role_list(self, interaction: discord.Interaction):
+        ctx = await Interactx(interaction)
+        with database(f"./data/level/{ctx.guild.id}.db", self.bot.db) as db:
+            dbout = db.get("level-role", {})
+            soft = sorted(dbout.items(), key=lambda x: int(x[0]))
+            listr = "\n".join([ f"lv {i[0]}: <@&{i[1]}>" for i in soft])
+        embed = discord.Embed(title="Level role list", description=listr)
+        await ctx.send(embed=embed)
     
     @app_commands.command(name="add_level_role", description="Set role phần thưởng cho level.")
     @app_commands.default_permissions(manage_roles=True)
@@ -121,7 +131,7 @@ class Level(commands.Cog):
                 users = []
                 
                 for user, level in keys:
-                    if user == "level-role":
+                    if not user.isnumeric():
                         continue
                     exp = level["level"] * 100 + level["exp"]
                     users.append((user, exp))
