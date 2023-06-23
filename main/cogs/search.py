@@ -22,7 +22,7 @@ class google(commands.Cog):
         else:
             return []
     
-    async def api_search(self, q):
+    async def google_api_search(self, q):
         payload = {
             "key": os.getenv("GOOGLE_TOKEN"),
             "cx": os.getenv("GOOGLE_CX_ID"),
@@ -33,25 +33,22 @@ class google(commands.Cog):
             async with s.get("https://www.googleapis.com/customsearch/v1", params=payload) as r:
                 djson = await r.json()
         return djson['items']
-        
-    @app_commands.command(name="search", description="Google Search")
+    
+    g_search = app_commands.Group(name="search", description="tempvoice command")
+    
+    @g_search.command(name="google", description="command that can you can use Google Search on your discord")
     @app_commands.describe(data="cái cần tìm kiếm")
     @app_commands.autocomplete(data=google_autocomplete)
-    async def search(self, interaction, data:str=None):
+    async def search_google(self, interaction, data:str):
         ctx = await Interactx(interaction)
-        if data is not None:
-            gsl = []
-            data = await self.api_search(data)
-            for i in data:
-                snippet = f"\n`{i.get('snippet')}`" if i.get('snippet') is not None else ""
-                rdata = f"{i['displayLink']}\n**[{i['title']}]({i['link']})**{snippet}"
-                gsl.append(rdata)
-            embed = discord.Embed(title="Google Search", description="\n\n".join(gsl))
-            await ctx.send(embed=embed)
-        else:
-            embed = discord.Embed(title="Google Search Command", description=f"**How To Use:**\n`{get_prefix(ctx)}search <data>`")
-            await ctx.reply(embed=embed)
-        
+        gsl = []
+        data = await self.google_api_search(data)
+        for i in data:
+            snippet = f"\n`{i.get('snippet')}`" if i.get('snippet') is not None else ""
+            rdata = f"{i['displayLink']}\n**[{i['title']}]({i['link']})**{snippet}"
+            gsl.append(rdata)
+        embed = discord.Embed(title="Google Search", description="\n\n".join(gsl))
+        await ctx.send(embed=embed)
     
     
     
