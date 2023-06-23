@@ -2,7 +2,6 @@ import discord
 import os
 from discord.ext import commands
 from discord import app_commands
-from unitiprefix import get_prefix
 from unity.interactx import Interactx
 import aiohttp
 
