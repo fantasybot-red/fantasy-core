@@ -205,7 +205,7 @@ async def afk(interaction: discord.Interaction, rest: str = "AFK"):
             await ctx.author.edit(nick=ctx.author.nick + " [AFK]")
         except BaseException:
             pass
-    with database(f"./data/afk/{ctx.guild.id}.db", bot.db) as db:
+    with database(f"./data/afk/{ctx.guild.id}", bot.db) as db:
         old_afk = db.get("afklist")
         if old_afk is None:
             db["afklist"] = [ctx.author.id]
@@ -228,7 +228,7 @@ async def on_message(message: discord.Message):
         await message.reply(f'**Hi tôi là {bot.user.mention} xin hay dùng `/` để dùng commands của tôi nhé nhé 😊**')
     
     try:
-        with database(f"./data/afk/{message.guild.id}.db", bot.db, True) as db:
+        with database(f"./data/afk/{message.guild.id}", bot.db, True) as db:
             data = db["afklist"]
             if data is not None:
                 if message.author.id in data:
@@ -248,13 +248,13 @@ async def on_message(message: discord.Message):
                                 pass
                     await message.reply(f'**Chào mừng quay trở lại {message.author.mention} . Tôi đã bỏ AFK cho bạn rồi đó.**', delete_after=10)
             if db.get("afklist"):
-                bot.db.delete(f"./data/afk/{message.guild.id}.db")
+                bot.db.delete(f"./data/afk/{message.guild.id}")
     except FileNotFoundError:
         pass
 
     if message.mentions:
         try:
-            with database(f"./data/afk/{message.guild.id}.db", bot.db, True) as db:
+            with database(f"./data/afk/{message.guild.id}", bot.db, True) as db:
                 data = db["afklist"]
                 for user in message.mentions:
                     if user.id in data:
@@ -318,18 +318,18 @@ async def cogs(interaction: discord.Interaction, ad:app_commands.Choice[str], et
 @bot.event
 async def on_member_remove(member: discord.Member):
     try:
-        with database(f"./data/afk/{member.guild.id}.db", bot.db, True) as db:
+        with database(f"./data/afk/{member.guild.id}", bot.db, True) as db:
             data = db["afklist"]
             if data is not None:
                 if member.id in data:
                     db["afklist"] = data.remove(member.id)
                     del db[str(member.id)]
             if db["afklist"] is None:
-                bot.db.delete(f"./data/afk/{member.guild.id}.db")
+                bot.db.delete(f"./data/afk/{member.guild.id}")
     except BaseException:
         pass
     try:
-        with database(f"./data/level/{member.guild.id}.db", bot.db, True) as db:
+        with database(f"./data/level/{member.guild.id}", bot.db, True) as db:
             del db[str(member.id)]
     except BaseException:
         pass
@@ -339,8 +339,8 @@ async def on_member_remove(member: discord.Member):
 async def on_guild_remove(guild: discord.Guild):
     keys = ["afk", "level", "setting", "tempvoice", "voicehub"]
     for i in keys:
-        if bot.db.exists(f"./data/{i}/{guild.id}.db") == 1:
-            bot.db.delete(f"./data/{i}/{guild.id}.db")
+        if bot.db.exists(f"./data/{i}/{guild.id}") == 1:
+            bot.db.delete(f"./data/{i}/{guild.id}")
 
 @bot.event
 async def setup_hook():

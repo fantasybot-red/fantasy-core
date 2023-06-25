@@ -21,7 +21,7 @@ class Level(commands.Cog):
 
         seting = setting.getsetting(message.guild.id, "level", self.bot.db)
         if seting is None:
-            with database(f"./data/level/{message.guild.id}.db", self.bot.db) as db:
+            with database(f"./data/level/{message.guild.id}", self.bot.db) as db:
                 for i in db.get("channel_disable", []):
                     if message.guild.get_channel(i) is None:
                         out_ch = db["channel_disable"]
@@ -70,7 +70,7 @@ class Level(commands.Cog):
     @app_commands.command(name="level_role_list", description="Xem danh sach level role")
     async def level_role_list(self, interaction: discord.Interaction):
         ctx = await Interactx(interaction)
-        with database(f"./data/level/{ctx.guild.id}.db", self.bot.db) as db:
+        with database(f"./data/level/{ctx.guild.id}", self.bot.db) as db:
             dbout = db.get("level-role", {})
             soft = sorted(dbout.items(), key=lambda x: int(x[0]))
             listr = "\n".join([ f"lv {i[0]}: <@&{i[1]}>" for i in soft])
@@ -81,7 +81,7 @@ class Level(commands.Cog):
     @app_commands.default_permissions(manage_guild=True)
     async def add_level_role(self, interaction: discord.Interaction, level:app_commands.Range[int, 0, None], role: discord.Role):
         ctx = await Interactx(interaction)
-        with database(f"./data/level/{ctx.guild.id}.db", self.bot.db) as db:
+        with database(f"./data/level/{ctx.guild.id}", self.bot.db) as db:
             dbout = db.get("level-role", {})
             dbout[str(level)] = role.id
             if dbout.items():
@@ -93,7 +93,7 @@ class Level(commands.Cog):
     @app_commands.default_permissions(manage_guild=True)
     async def remove_level_role(self, interaction: discord.Interaction, level:app_commands.Range[int, 0, None]):
         ctx = await Interactx(interaction)
-        with database(f"./data/level/{ctx.guild.id}.db", self.bot.db) as db:
+        with database(f"./data/level/{ctx.guild.id}", self.bot.db) as db:
             dbout = db.get("level-role", {})
             isdel = False
             if dbout.get(str(level)) is not None:
@@ -117,7 +117,7 @@ class Level(commands.Cog):
     async def level_channel_setting(self, interaction: discord.Interaction, channel:discord.abc.GuildChannel, value: app_commands.Choice[int]):
         ctx = await Interactx(interaction)
         if setting.getsetting(ctx.guild.id, "level", self.bot.db) is None:
-            with database(f"./data/level/{ctx.guild.id}.db", self.bot.db) as db:
+            with database(f"./data/level/{ctx.guild.id}", self.bot.db) as db:
                 dbout = db.get("channel_disable", [])
                 if not value.value:
                     dbout.append(channel.id)
@@ -139,7 +139,7 @@ class Level(commands.Cog):
                 if member is None:
                     member = ctx.author
                 if not member.bot:
-                    with database(f"./data/level/{ctx.guild.id}.db", self.bot.db) as db:
+                    with database(f"./data/level/{ctx.guild.id}", self.bot.db) as db:
                         data = db.get(str(member.id), {"level": 0, "exp": 0})
                     img = await rank_card(username=member.nick or member.global_name or member.name,
                                         avatar=member.display_avatar.with_format(
@@ -163,7 +163,7 @@ class Level(commands.Cog):
         ctx = await Interactx(interaction)
         if setting.getsetting(ctx.guild.id, "level", self.bot.db) is None:
                 try:
-                    with database(f"./data/level/{ctx.guild.id}.db", self.bot.db, True) as db:
+                    with database(f"./data/level/{ctx.guild.id}", self.bot.db, True) as db:
                         keys = db.items()
                 except FileNotFoundError:
                     keys = []
