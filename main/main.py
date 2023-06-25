@@ -247,7 +247,7 @@ async def on_message(message: discord.Message):
                             except BaseException:
                                 pass
                     await message.reply(f'**Chào mừng quay trở lại {message.author.mention} . Tôi đã bỏ AFK cho bạn rồi đó.**', delete_after=10)
-            if db["afklist"] is None:
+            if db.get("afklist"):
                 bot.db.delete(f"./data/afk/{message.guild.id}.db")
     except FileNotFoundError:
         pass
