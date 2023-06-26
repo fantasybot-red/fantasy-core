@@ -80,7 +80,7 @@ class Spotify:
                     else:
                         return outdata
                 else:
-                    return None
+                    return {"type": None, "data":  None}
 
 
 class Track:
