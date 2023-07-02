@@ -62,7 +62,7 @@ class google(commands.Cog):
     async def search_google(self, interaction, data:str):
         ctx = await Interactx(interaction)
         gsl = []
-        data = await self.google_api_ssearch(data)
+        data = await self.google_api_search(data)
         for i in data:
             snippet = f"\n`{i.get('snippet')}`" if i.get('snippet') is not None else ""
             rdata = f"{i['displayLink']}\n**[{i['title']}]({i['link']})**{snippet}"
