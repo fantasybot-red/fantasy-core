@@ -375,7 +375,7 @@ class Music(commands.Cog):
             elif "spotify.com" in url or rspotify.is_spotify_uri(url):
                 data = await rspotify.get_from_url(url)
                 rdata = data["data"]
-                if data is not None:
+                if rdata is not None:
                     if data["type"] == "track" or data["type"] == "episode":
                         queue.append(rdata)
                         try:
