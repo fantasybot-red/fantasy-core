@@ -388,7 +388,7 @@ class Reply_Capcha(discord.ui.Modal):
         label='Capcha Code',
         max_length=6,
         min_length=6,
-        style=discord.TextStyle.shot
+        style=discord.TextStyle.short
     )
     
     def __init__(self):
