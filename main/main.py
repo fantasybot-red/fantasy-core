@@ -16,7 +16,7 @@ from sentry_sdk.integrations.aiohttp import AioHttpIntegration
 from datetime import datetime
 from unity.net import net_usage
 from unity.global_ui import delmessbt
-from unity.interactx import Interactx
+from unity.interactx import Interactx, CommandRateLimit
 from discord import app_commands
 from jkeydb import database
 from discord.ext import commands, tasks
@@ -383,8 +383,35 @@ def add():
 
 add()
 
+class Reply_Capcha(discord.ui.Modal):
+    reply = discord.ui.TextInput(
+        label='Capcha Code',
+        max_length=6,
+        min_length=6,
+        style=discord.TextStyle.shot
+    )
+    
+    def __init__(self):
+        super().__init__(title='Bard')
+        self.data = None
+
+    async def on_submit(self, interaction: discord.Interaction):
+        await interaction.response.defer()
+        self.data = str(self.reply)
+        self.stop()
+
+    async def on_error(self, interaction: discord.Interaction, error: Exception) -> None:
+        await interaction.response.send_message('Oops! Something went wrong.', ephemeral=True)
+
+        # Make sure we know what the error actually is
+        traceback.print_exception(type(error), error, error.__traceback__)
+
 @bot.tree.error
 async def on_error(interaction: discord.Interaction, error):
+    if type(error) is CommandRateLimit:
+        
+        await interaction.response.send_message(f'**Bạn đang bị rate limit vui lòng nhập capcha**\n- vui lòng nhập dòng chữ màu 🔴', ephemeral=True)
+    else:
         bugid = os.urandom(16).hex()
         a = traceback.format_exception(type(error), error, error.__traceback__)
         out = "".join(a)
