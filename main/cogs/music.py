@@ -8,7 +8,6 @@ import zingmp3py
 import botemoji
 import youtube_dl
 import sclib.asyncio as sclib
-import chiasenhac.asyncio as chiasenhac
 import spotipy2.types.track as sptypes
 import unity.twitch as twitch
 import unity.spotify as sp
@@ -24,7 +23,6 @@ from unity.interactx import Interactx
 
 scclient = sclib.SoundcloudAPI()
 zclient = zingmp3py.ZingMp3Async()
-csnclient = chiasenhac.ChiaSeNhac(email=os.getenv("CSN_EMAIL"), password=os.getenv("CSN_PASS"))
 tw = twitch.TwitchHelix(client_id=os.getenv("TWITCH_ID"), client_secret=os.getenv("TWITCH_SECRER"))
 ytclient = Youtube(os.getenv("MUISC_API_URL"))
 rspotify = sp.Spotify(os.getenv("MUISC_API_URL"))
@@ -219,11 +217,6 @@ class Music(commands.Cog):
                 img_url = audio.thumbnail
                 title = audio.title
                 URL = audio.streaming_url
-            elif type(audio) is chiasenhac.Song:
-                pageurl = audio.url
-                img_url = audio.thumbnail
-                title = audio.titleraw
-                URL = (await (await audio.list_audio()).best_quality()).url
             elif type(audio) is sp.Track:
                 pageurl = audio.spotify_url
                 img_url = audio.coverImage["LARGE"]
@@ -486,27 +479,6 @@ class Music(commands.Cog):
                         await mess.edit(content="**Link không hợp lệ**")
                     except BaseException:
                         pass
-            elif "chiasenhac.vn" in url:
-                try:
-                    song = await csnclient.get_songinfo(url)
-                except BaseException:
-                    song = None
-                if song != None:
-                    queue.append(song)
-                    try:
-                        await mess.edit(content="**Đã add song vào queue**")
-                    except BaseException:
-                        pass
-                else:
-                    try:
-                        await mess.edit(content="**Link không hợp lệ**")
-                    except BaseException:
-                        pass
-            else:
-                try:
-                    await mess.edit(content="**Link không hợp lệ**")
-                except BaseException:
-                    pass
         elif url.lower().startswith("sc:"):
             msg =  url[3:]
             try:
@@ -755,7 +727,7 @@ class Music(commands.Cog):
     async def play(self, interaction: discord.Interaction, url: str=None):
         ctx = await Interactx(interaction)
         if url is None:
-            embed = discord.Embed(title="Play Command", description=f"**Support Url:**\nYoutube\nSoundcloud\nSpotify\nZingMp3\nChiaSeNhac\n**Search:**\nYoutube : default\nSoundcloud : `sc:<data>`\nSpotify : `sf:<data>`\n**How to Use:**\n`{get_prefix(ctx)}play <url or search>`")
+            embed = discord.Embed(title="Play Command", description=f"**Support Url:**\nYoutube\nSoundcloud\nSpotify\nZingMp3\n**Search:**\nYoutube : default\nSoundcloud : `sc:<data>`\nSpotify : `sf:<data>`\n**How to Use:**\n`{get_prefix(ctx)}play <url or search>`")
             await ctx.send(embed=embed)
             
         if url is not None:
