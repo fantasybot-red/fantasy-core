@@ -5,7 +5,7 @@ from jkeydb import database
 
 rate_limit = {}
 
-class CommandRateLimit(BaseException):
+class CommandRateLimit(Exception):
     pass
 
 
@@ -23,11 +23,14 @@ async def Interactx(obj: discord.Interaction, *, ephemeral: bool = False, start:
         if start:
             old_id = rate_limit.get(str(userid), 0)
             rate_limit[str(userid)] = old_id + 1
-            asyncio.create_task(check(userid))
             with database(f"./data/ratelimit", obj.client.db) as db:
-                if rate_limit.get(str(userid), 0) >= 4:
-                    db[str(obj.user.id)] = True
-                    raise CommandRateLimit()
+                if rate_limit.get(str(userid), 0) >= 2 or db.get(str(obj.user.id)) is not None:
+                    del rate_limit[str(userid)]
+                    del db[str(obj.user.id)]
+                    print(str(obj.user.id))
+                    # db[str(obj.user.id)] = True
+                    # raise CommandRateLimit()
+            asyncio.create_task(check(userid))
             await newctx.defer(ephemeral=ephemeral)
     else:
         newctx = obj

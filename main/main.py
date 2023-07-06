@@ -408,8 +408,8 @@ class Reply_Capcha(discord.ui.Modal):
 
 @bot.tree.error
 async def on_error(interaction: discord.Interaction, error):
+    error = error.original
     if type(error) is CommandRateLimit:
-        
         await interaction.response.send_message(f'**Bạn đang bị rate limit vui lòng nhập capcha**\n- vui lòng nhập dòng chữ màu 🔴', ephemeral=True)
     else:
         bugid = os.urandom(16).hex()
