@@ -9,7 +9,7 @@ class CommandRateLimit(BaseException):
     pass
 
 
-async def check(userid, db):
+async def check(userid):
     await asyncio.sleep(5)
     old_id = rate_limit.get(str(userid), 0)
     rate_limit[str(userid)] = old_id - 1
