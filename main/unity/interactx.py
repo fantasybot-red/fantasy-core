@@ -24,9 +24,10 @@ async def Interactx(obj: discord.Interaction, *, ephemeral: bool = False, start:
             old_id = rate_limit.get(str(userid), 0)
             rate_limit[str(userid)] = old_id + 1
             with database(f"./data/ratelimit", obj.client.db) as db:
-                if rate_limit.get(str(userid), 0) >= 2 or db.get(str(obj.user.id)) is not None:
+                if rate_limit.get(str(userid), 0) >= 2 or db.get(str(obj.user.id)):
                     del rate_limit[str(userid)]
-                    del db[str(obj.user.id)]
+                    if db.get(str(obj.user.id)):
+                        del db[str(obj.user.id)]
                     print(str(obj.user.id))
                     # db[str(obj.user.id)] = True
                     # raise CommandRateLimit()
