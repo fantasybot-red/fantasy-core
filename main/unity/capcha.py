@@ -1,6 +1,7 @@
 import io
 from PIL import Image, ImageDraw, ImageFont
 import random
+from sync_to_async import run
 import string
 
 # Generate a random CAPTCHA text
@@ -8,7 +9,7 @@ def generate_captcha_text(length=6):
     captcha_text = ''.join(random.choices(string.ascii_uppercase+string.digits, k=length))
     return captcha_text
 
-# Generate a random CAPTCHA image with red text and random letter heights
+@run
 def generate_captcha_image(captcha_text):
     # Image dimensions
     width, height = 5000, 2000
@@ -35,6 +36,8 @@ def generate_captcha_image(captcha_text):
         x = (width - text_width) / 5
         y = (height - text_height) / 2
 
+        captcha_text = captcha_text.upper()
+        
         # Store the starting point of the line
         start_x = 0
         start_y = 0
@@ -81,9 +84,9 @@ def generate_captcha_image(captcha_text):
         angle = random.randint(-10, 10)
         draw.text((x_random, y_random), char, rotation=angle, fill=tuple(listall), font=font_spam)
 
-    draw_letter(tuple(listall), generate_captcha_text(), up[0])
+    draw_letter(tuple(listall), generate_captcha_text(len(captcha_text)), up[0])
 
-    draw_letter("red", captcha_text, up[1])
+    draw_letter((238, 75, 43), captcha_text, up[1])
 
     buf = io.BytesIO()
     image.save(buf, format='PNG')

@@ -19,6 +19,7 @@ from unity.global_ui import delmessbt
 from unity.interactx import Interactx, CommandRateLimit
 from discord import app_commands
 from jkeydb import database
+from unity.capcha import generate_captcha_image, generate_captcha_text
 from discord.ext import commands, tasks
 from dotenv import load_dotenv
 
@@ -391,26 +392,54 @@ class Reply_Capcha(discord.ui.Modal):
         style=discord.TextStyle.short
     )
     
-    def __init__(self):
-        super().__init__(title='Bard')
-        self.data = None
+    def __init__(self, code, def_f):
+        super().__init__(title='Enter Capcha code', timeout=300)
+        self.code = code
+        self.def_f = def_f
 
     async def on_submit(self, interaction: discord.Interaction):
-        await interaction.response.defer()
-        self.data = str(self.reply)
-        self.stop()
+        if self.code == str(self.reply).upper():
+            await self.def_f
+            await interaction.response.edit_message(content="**Mã capcha hợp lệ giờ bạn có thể dùng bot tiếp rồi**", embed=None, view=None)
+        else:
+            await interaction.response.send_message("**Mã capcha không hợp lệ**", ephemeral=True)
 
     async def on_error(self, interaction: discord.Interaction, error: Exception) -> None:
         await interaction.response.send_message('Oops! Something went wrong.', ephemeral=True)
-
-        # Make sure we know what the error actually is
         traceback.print_exception(type(error), error, error.__traceback__)
+
+class Capcha_BT(discord.ui.View):
+        def __init__(self, code, def_f):
+            super().__init__(timeout=300)
+            self.code = code
+            self.def_f = def_f
+
+        @discord.ui.button(style=discord.ButtonStyle.gray, label="Enter Capcha Code")
+        async def start(self, interaction: discord.Interaction,  button: discord.ui.Button):
+            await interaction.response.send_modal(Reply_Capcha(self.code, self.def_f))
+                
 
 @bot.tree.error
 async def on_error(interaction: discord.Interaction, error):
     error = error.original
     if type(error) is CommandRateLimit:
-        await interaction.response.send_message(f'**Bạn đang bị rate limit vui lòng nhập capcha**\n- vui lòng nhập dòng chữ màu 🔴', ephemeral=True)
+        await interaction.response.defer(ephemeral=True, thinking=True)
+        async def capcha_valid():
+            with database(f"./data/ratelimit", bot.db) as db:
+                if db.get(str(interaction.user.id)):
+                    del db[str(interaction.user.id)]
+        embed = discord.Embed(title="Bạn đang bị rate limit vui lòng nhập capcha", description="- Vui lòng nhập dòng chữ màu 🔴 (Đỏ)\n- Không quan tâm là mã capcha là viết HOA hay thường\n- Mã sẽ có hiệu lực trong 5p sau 5p vui lòng chạy lại lệnh để làm capcha\n- Gõ các ký tự được tô màu 🔴 (Đỏ) từ trái sang phải.")
+        capcha_code = generate_captcha_text()
+        file_byte = await generate_captcha_image(capcha_code)
+        view = Capcha_BT(capcha_code, capcha_valid())
+        out = await interaction.followup.send(file=discord.File(io.BytesIO(file_byte), "image.png"), view=view, embed=embed, ephemeral=True)
+        await view.wait()
+        with database(f"./data/ratelimit", bot.db) as db:
+            if db.get(str(interaction.user.id)):
+                try:
+                    await out.edit("Hết thời gian", view=None)
+                except BaseException:
+                    pass
     else:
         bugid = os.urandom(16).hex()
         a = traceback.format_exception(type(error), error, error.__traceback__)

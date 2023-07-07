@@ -10,7 +10,7 @@ class CommandRateLimit(Exception):
 
 
 async def check(userid):
-    await asyncio.sleep(5)
+    await asyncio.sleep(4)
     old_id = rate_limit.get(str(userid), 0)
     rate_limit[str(userid)] = old_id - 1
     if rate_limit[str(userid)] < 1:
@@ -24,15 +24,13 @@ async def Interactx(obj: discord.Interaction, *, ephemeral: bool = False, start:
             old_id = rate_limit.get(str(userid), 0)
             rate_limit[str(userid)] = old_id + 1
             with database(f"./data/ratelimit", obj.client.db) as db:
-                if rate_limit.get(str(userid), 0) >= 2 or db.get(str(obj.user.id)):
+                if rate_limit.get(str(userid), 0) >= 3 or db.get(str(obj.user.id)):
                     del rate_limit[str(userid)]
-                    if db.get(str(obj.user.id)):
-                        del db[str(obj.user.id)]
-                    print(str(obj.user.id))
-                    # db[str(obj.user.id)] = True
-                    # raise CommandRateLimit()
+                    db[str(obj.user.id)] = True
+                    raise CommandRateLimit()
+                else:
+                    await newctx.defer(ephemeral=ephemeral)
             asyncio.create_task(check(userid))
-            await newctx.defer(ephemeral=ephemeral)
     else:
         newctx = obj
     return newctx
