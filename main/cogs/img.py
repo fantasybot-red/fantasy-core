@@ -19,7 +19,7 @@ class img(commands.Cog):
         embed.set_image(url=url)
         await ctx.send(embed=embed)
         
-    @app_commands.command(name="hent_n", description="xem một ảnh haiten random", nsfw=True)
+    @app_commands.command(name="henta_i", description="xem một ảnh haiten random", nsfw=True)
     async def ht(self, interaction: discord.Interaction):
         ctx = await Interactx(interaction)
         async with aiohttp.ClientSession() as session:

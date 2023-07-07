@@ -91,7 +91,7 @@ class nhentaia(commands.Cog):
     def __init__(self, bot):
       self.bot = bot
 
-    @app_commands.command(name="nhent_n", description="Đọc or xem info truyên trên nhaiten", nsfw=True)
+    @app_commands.command(name="nhenta_i", description="Đọc or xem info truyên trên nhaiten", nsfw=True)
     @app_commands.describe(arg="ID Doujin")
     @app_commands.rename(arg="code")
     async def nht(self, interaction: discord.Interaction, arg:int):
