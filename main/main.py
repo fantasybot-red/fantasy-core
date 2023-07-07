@@ -429,6 +429,7 @@ async def on_error(interaction: discord.Interaction, error):
                 if db.get(str(interaction.user.id)):
                     del db[str(interaction.user.id)]
         embed = discord.Embed(title="Bạn đang bị rate limit vui lòng nhập capcha", description="- Vui lòng nhập dòng chữ màu 🔴 (Đỏ)\n- Không quan tâm là mã capcha là viết HOA hay thường\n- Mã sẽ có hiệu lực trong 5p sau 5p vui lòng chạy lại lệnh để làm capcha\n- Gõ các ký tự được tô màu 🔴 (Đỏ) từ trái sang phải.")
+        embed.set_image(url="attachment://image.png")
         capcha_code = generate_captcha_text()
         file_byte = await generate_captcha_image(capcha_code)
         view = Capcha_BT(capcha_code, capcha_valid())
