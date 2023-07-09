@@ -16,7 +16,7 @@ from sentry_sdk.integrations.aiohttp import AioHttpIntegration
 from datetime import datetime
 from unity.net import net_usage
 from unity.global_ui import delmessbt
-from unity.interactx import Interactx, CommandRateLimit, ratelimit_check
+from unity.interactx import Interactx, ratelimit_check
 from discord import app_commands
 from jkeydb import database
 from unity.capcha import generate_captcha_image, generate_captcha_text

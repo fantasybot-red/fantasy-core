@@ -5,10 +5,6 @@ from jkeydb import database
 
 rate_limit = {}
 
-class CommandRateLimit(Exception):
-    pass
-
-
 async def check(userid):
     await asyncio.sleep(4)
     old_id = rate_limit.get(str(userid), 0)
@@ -31,7 +27,6 @@ async def ratelimit_check(obj):
 async def Interactx(obj: discord.Interaction, *, ephemeral: bool = False, start: bool = True) -> commands.Context:
     if type(obj) is discord.Interaction:
         newctx = await obj.client.get_context(obj)
-        userid = obj.user.id
         if start:
             await newctx.defer(ephemeral=ephemeral)
     else:
