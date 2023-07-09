@@ -254,19 +254,16 @@ async def on_message(message: discord.Message):
         pass
 
     if message.mentions:
-        try:
-            with database(f"./data/afk/{message.guild.id}", bot.db, True) as db:
-                data = db["afklist"]
-                for user in message.mentions:
-                    if user.id in data:
-                        user_afk_data = db[str(user.id)]
-                        reason = user_afk_data["reason"]
-                        since = user_afk_data["time"]
-                        mallow = discord.AllowedMentions(
-                            everyone=False, users=False, roles=False, replied_user=True)
-                        await message.reply(f"**{user.mention} đang AFK với lý do :** {reason} **- <t:{since}:R>**", allowed_mentions=mallow, delete_after=10)
-        except FileNotFoundError:
-            pass
+        with database(f"./data/afk/{message.guild.id}", bot.db) as db:
+            data = db.get("afklist", [])
+            for user in message.mentions:
+                if user.id in data:
+                    user_afk_data = db[str(user.id)]
+                    reason = user_afk_data["reason"]
+                    since = user_afk_data["time"]
+                    mallow = discord.AllowedMentions(
+                        everyone=False, users=False, roles=False, replied_user=True)
+                    await message.reply(f"**{user.mention} đang AFK với lý do :** {reason} **- <t:{since}:R>**", allowed_mentions=mallow, delete_after=10)
 
 @bot.tree.context_menu(name="Delete Bot Message")
 async def delbotmess(interaction: discord.Interaction, message: discord.Message):
