@@ -24,7 +24,7 @@ class ChatGPT:
         while True:
             try:
                 async with aiohttp.ClientSession(headers=headers) as s:
-                    async with s.post("https://us-central1-chat-for-chatgpt.cloudfunctions.net/basicUserRequestChatGPT",
+                    async with s.post("https://us-central1-chat-for-chatgpt.cloudfunctions.net/plusUserRequestChatGPT",
                                     timeout=None,
                                     ssl=self.SSL_Mode,
                                     raise_for_status=True,
