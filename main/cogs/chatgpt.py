@@ -1,5 +1,4 @@
 import discord
-import io
 import traceback
 from unitiprefix import get_prefix
 from unity.chatgpt import ChatGPT
