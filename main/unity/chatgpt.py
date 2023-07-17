@@ -24,15 +24,13 @@ class ChatGPT:
         while True:
             try:
                 async with aiohttp.ClientSession(headers=headers) as s:
-                    async with s.post("https://us-central1-chat-for-chatgpt.cloudfunctions.net/plusUserRequestChatGPT",
+                    async with s.post("https://us-central1-chat-for-chatgpt.cloudfunctions.net/basicUserRequestChatGPT",
                                     timeout=None,
                                     ssl=self.SSL_Mode,
                                     raise_for_status=True,
-                                    json={"data" : {
-                                            "messages": messlist
-                                            }}
+                                    json={"data" : {"message": messlist}}
                                     ) as r:
-                        return (await r.json())["result"]["choices"][0]["message"]["content"].strip()
+                        return (await r.json())["result"]["choices"][0]["text"].strip()
             except ClientResponseError as e:
                 if e.status != 429:
                     raise e
