@@ -228,30 +228,30 @@ async def on_message(message: discord.Message):
     if message.content == f"<@{bot.user.id}>" or message.content == f"<@!{bot.user.id}>":
         await message.reply(f'**Hi tôi là {bot.user.mention} xin hay dùng `/` để dùng commands của tôi nhé nhé 😊**')
     
-    try:
-        with database(f"./data/afk/{message.guild.id}", bot.db, True) as db:
-            data = db["afklist"]
-            if data is not None:
-                if message.author.id in data:
-                    db["afklist"] = data.remove(message.author.id)
-                    del db[str(message.author.id)]
-                    if message.author.nick is not None:
-                        check = message.author.nick.replace(" [AFK]", "")
-                        if check == (message.author.global_name or message.author.name):
-                            try:
-                                await message.author.edit(nick=None)
-                            except BaseException:
-                                pass
-                        else:
-                            try:
-                                await message.author.edit(nick=check)
-                            except BaseException:
-                                pass
-                    await message.reply(f'**Chào mừng quay trở lại {message.author.mention} . Tôi đã bỏ AFK cho bạn rồi đó.**', delete_after=10)
-            if db.get("afklist"):
-                bot.db.delete(f"./data/afk/{message.guild.id}")
-    except FileNotFoundError:
-        pass
+
+    with database(f"./data/afk/{message.guild.id}", bot.db) as db:
+        data = db.get("afklist", [])
+        if data is not None:
+            if message.author.id in data:
+                db["afklist"] = data.remove(message.author.id)
+                if db["afklist"]:
+                    del db["afklist"]
+                del db[str(message.author.id)]
+                if message.author.nick is not None:
+                    check = message.author.nick.replace(" [AFK]", "")
+                    if check == (message.author.global_name or message.author.name):
+                        try:
+                            await message.author.edit(nick=None)
+                        except BaseException:
+                            pass
+                    else:
+                        try:
+                            await message.author.edit(nick=check)
+                        except BaseException:
+                            pass
+                await message.reply(f'**Chào mừng quay trở lại {message.author.mention} . Tôi đã bỏ AFK cho bạn rồi đó.**', delete_after=10)
+        if not db.get("afklist"):
+            bot.db.delete(f"./data/afk/{message.guild.id}")
 
     if message.mentions:
         with database(f"./data/afk/{message.guild.id}", bot.db) as db:
@@ -376,7 +376,7 @@ async def on_shard_connect(shard_id):
 
 @bot.event
 async def on_error(event, *args, **kwargs):
-    raise
+    traceback.print_exc()
 
 class Reply_Capcha(discord.ui.Modal):
     reply = discord.ui.TextInput(
