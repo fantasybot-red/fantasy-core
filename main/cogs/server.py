@@ -292,10 +292,10 @@ class server(commands.Cog):
         resp = await handler(request)
         if type(resp) is web.FileResponse:
             ct, encoding = mimetypes.guess_type(str(resp._path))
-            print(ct)
-            with open(resp._path, "r") as f:
-                jsencode = Js.obfuscate(f.read())
-            resp = web.Response(body=jsencode, content_type=ct)
+            if "javascript" in ct:
+                with open(resp._path, "r") as f:
+                    jsencode = Js.obfuscate(f.read())
+                resp = web.Response(body=jsencode, content_type=ct)
         return resp
     
     @web.middleware

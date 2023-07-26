@@ -210,8 +210,8 @@ class Js:
     def codeToExp(code):
         return 'window["\\x65\\x76\\x61\\x6C"](window["\\x65\\x76\\x61\\x6C"]("\\x74\\x68\\x69\\x73\\x5b\\x22\\x53\\x74\\x72\\x69\\x6e\\x67\\x22\\x5d\\x5b\\x22\x66\\x72\\x6f\\x6d\\x43\\x68\\x61\\x72\\x43\\x6f\\x64\\x65\\x22\\x5d")('+Js.sentToExp(code)+'))'
     def ezObfuscate(code):
-        return "window['\\x65\x76\\x61\\x6C']('{}')".format("".join("\\x{:02x}".format(ord(c)) for c in code))
+        return "window['\\x73\\x65\\x74\\x54\\x69\\x6d\\x65\\x6f\\x75\\x74']('{}', 0)".format("".join("\\x{:02x}".format(ord(c)) for c in code))
     def obfuscate(code):
         cleen_code = jsmin_for_posers(code)
-        print(cleen_code)
+
         return Js.codeToExp(Js.ezObfuscate(cleen_code))
