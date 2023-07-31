@@ -6,9 +6,7 @@ import aiohttp_session
 import base64
 import json
 import asyncio
-import mimetypes
 from aiohttp import web
-from unity.jsosb import Js
 from urllib.parse import urljoin, quote_plus, urlparse
 from discord.ext import commands, tasks
 from nacl.signing import VerifyKey
@@ -288,17 +286,6 @@ class server(commands.Cog):
         self.web_server.start()
     
     @web.middleware
-    async def javascript_osb(self, request: web.BaseRequest, handler):
-        resp = await handler(request)
-        if type(resp) is web.FileResponse:
-            ct, encoding = mimetypes.guess_type(str(resp._path))
-            if "javascript" in ct:
-                with open(resp._path, "r") as f:
-                    jsencode = Js.obfuscate(f.read())
-                resp = web.Response(body=jsencode, content_type=ct)
-        return resp
-    
-    @web.middleware
     async def errtb(self, request: web.BaseRequest, handler):
         try:
             resp = await handler(request)
@@ -343,7 +330,6 @@ class server(commands.Cog):
         f = fernet.Fernet(key.encode("utf8"))
         s = EncryptedCookieStorage(f, cookie_name="Session_Token", httponly=False, max_age=34560000)
         self.app.middlewares.append(aiohttp_session.session_middleware(s))
-        self.app.middlewares.append(self.javascript_osb)
         self.app.middlewares.append(self.errtb)
         
 
