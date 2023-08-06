@@ -185,7 +185,7 @@ class server(commands.Cog):
         
         @self.routes.get('/premium')
         async def premium(request: web.BaseRequest):
-            return html_send("dash-main/premium.html", request, temp="dash.html")
+            return html_send("dash-main/premium.html", request)
             
         @self.routes.get('/favicon.ico')
         async def favicon(request: web.BaseRequest):
