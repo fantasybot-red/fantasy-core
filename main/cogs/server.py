@@ -181,11 +181,11 @@ class server(commands.Cog):
             
         @self.routes.get('/pp')
         async def policy(request: web.BaseRequest):
-            return html_send("dash-main/privacy-policy.html", request)
+            return html_send("root-main/privacy-policy.html", request)
         
         @self.routes.get('/premium')
         async def premium(request: web.BaseRequest):
-            return html_send("root-main/premium.html", request, temp="dash.html")
+            return html_send("dash-main/premium.html", request, temp="dash.html")
             
         @self.routes.get('/favicon.ico')
         async def favicon(request: web.BaseRequest):
