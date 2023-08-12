@@ -15,6 +15,7 @@ statcord.py
 Jinja2
 beautifulsoup4
 psutil
+lxml
 sentry-sdk
 
 # check code typing
