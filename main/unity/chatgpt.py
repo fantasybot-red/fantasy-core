@@ -1,6 +1,5 @@
 import dataclasses
 import aiohttp
-from aiohttp.client_exceptions import ClientResponseError
 
 headers_real = {"User-Agent": "Mozilla/5.0 (compatible; FantasyBot/0.1; +https://fantasybot.tech/support)"}
 
@@ -18,20 +17,15 @@ class ChatGPT:
         pass
     
     async def create_new_chat(self, data):
-        messlist = [{"role": "system", "content": "AI has markdown support and your name is ChatGPT and made by OpenAI and AI output must below 4000 characters."}]
-        messlist.extend(data)
-        headers = headers_real.copy()
-        while True:
-            try:
-                async with aiohttp.ClientSession(headers=headers) as s:
-                    async with s.post("https://us-central1-chat-for-chatgpt.cloudfunctions.net/plusUserRequestChatGPT",
-                                    timeout=None,
-                                    ssl=self.SSL_Mode,
-                                    raise_for_status=True,
-                                    json={"data" : {"message": messlist}}
-                                    ) as r:
-                        return (await r.json())["result"]["choices"][0]["text"].strip()
-            except ClientResponseError as e:
-                if e.status != 429:
-                    raise e
-
+        async with aiohttp.ClientSession() as s:
+            data = {
+                "prompt": data,
+                "options": {},
+                "systemMessage": ".",
+                "temperature": 0.8,
+                "top_p": 1,
+                "model": "gpt-3.5-turbo",
+                "user": None
+            }
+            async with s.post("https://p5.v50.ltd/api/chat-process", json=data) as r:
+                return await r.text()

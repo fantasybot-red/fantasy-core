@@ -15,7 +15,7 @@ class Chatgpt(commands.Cog):
     
     @app_commands.command(name="chatgpt", description="Use ChatGPT by OpenAI on Discord")
     @app_commands.describe(data="Input for ChatGPT")
-    async def chatgpt(self, interaction: discord.Interaction, data:str):
+    async def chatgpt(self, interaction: discord.Interaction, data: str):
         ctx = await Interactx(interaction)
         if data:
             embed = discord.Embed(title="Waiting Response From ChatGPT")
