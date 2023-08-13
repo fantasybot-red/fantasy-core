@@ -24,7 +24,7 @@ class ChatGPT:
                 "systemMessage": ".",
                 "temperature": 0.8,
                 "top_p": 1,
-                "model": "gpt-4",
+                "model": "gpt-3.5-turbo",
                 "user": None
             }
             async with s.post("https://p5.v50.ltd/api/chat-process", json=data) as r:
