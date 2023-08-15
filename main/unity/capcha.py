@@ -19,7 +19,7 @@ def generate_captcha_image(captcha_text):
     draw = ImageDraw.Draw(image)
 
     # Set a font
-    font = ImageFont.truetype('arial.ttf', size=400)
+    font = ImageFont.truetype('./unity/Arialn.ttf', size=400)
 
     # Calculate the bounding box of the CAPTCHA text
     text_bbox = draw.textbbox((0, 0), captcha_text, font=font)
@@ -73,7 +73,7 @@ def generate_captcha_image(captcha_text):
     up = [True, False]
     random.shuffle(up)
 
-    font_spam = ImageFont.truetype('arial.ttf', size=200)
+    font_spam = ImageFont.truetype('./unity/Arialn.ttf', size=200)
     for _ in range(5):
         text_bbox = draw.textbbox((0, 0), captcha_text, font=font_spam)
         char_text_width = text_bbox[2] - text_bbox[0]
