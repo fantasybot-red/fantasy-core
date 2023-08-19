@@ -1,5 +1,6 @@
 import dataclasses
 import aiohttp
+import hashlib
 
 headers_real = {"User-Agent": "Mozilla/5.0 (compatible; FantasyBot/0.1; +https://fantasybot.tech/support)"}
 
@@ -8,6 +9,13 @@ headers_real = {"User-Agent": "Mozilla/5.0 (compatible; FantasyBot/0.1; +https:/
 class Image:
     filename: str
     content: bytes
+    
+
+
+def digestMessage(r):
+    e = r.encode()
+    t = hashlib.sha256(e).digest()
+    return ''.join(format(byte, '02x') for byte in t)
 
 
 class ChatGPT:
@@ -18,14 +26,18 @@ class ChatGPT:
     
     async def create_new_chat(self, data):
         async with aiohttp.ClientSession() as s:
+            times_ms = int(time.time() * 1000)
+            sign = digestMessage(f"{times_ms}:{data}:")
             data = {
-                "prompt": data,
-                "options": {},
-                "systemMessage": ".",
-                "temperature": 0.8,
-                "top_p": 1,
-                "model": "gpt-3.5-turbo",
-                "user": None
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": data
+                    }
+                ],
+                "time": times_ms,
+                "pass": None,
+                "sign": sign
             }
-            async with s.post("https://p5.v50.ltd/api/chat-process", json=data) as r:
+            async with s.post('https://next.eqing.tech/api/openai/v1/chat/completions', json=data) as r:
                 return await r.text()
