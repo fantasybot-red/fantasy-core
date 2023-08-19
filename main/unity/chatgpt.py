@@ -39,5 +39,5 @@ class ChatGPT:
                 "pass": None,
                 "sign": sign
             }
-            async with s.post('https://next.eqing.tech/api/openai/v1/chat/completions', json=data) as r:
+            async with s.post('https://d.aifree.site/api/generate', json=data) as r:
                 return await r.text()
