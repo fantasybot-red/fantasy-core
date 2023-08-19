@@ -1,6 +1,7 @@
 import dataclasses
 import aiohttp
 import hashlib
+import time
 
 headers_real = {"User-Agent": "Mozilla/5.0 (compatible; FantasyBot/0.1; +https://fantasybot.tech/support)"}
 
