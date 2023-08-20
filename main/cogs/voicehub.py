@@ -1,4 +1,4 @@
-import discord, typing
+import discord, typing, string
 from discord.ext import commands
 from discord import app_commands
 from unity.interactx import Interactx
@@ -41,9 +41,10 @@ class vh(commands.Cog):
                     if str(after.channel.id) in db.keys():
                         edit_dict = {}
                         main_cf = db[str(after.channel.id)]
+                        voicename = member.name if main_cf.get("name") is None else string.Template(main_cf["name"]).safe_substitute(name=member.name, nick=member.nick or member.global_name or member.name)
+                        voicename = voicename[:100]
                         if main_cf["type"] == "vc":
-                            ch = await member.guild.create_voice_channel(member.name, reason=f"VoiceHub | Create Temp Voice Channel For {member}", category=after.channel.category)
-                            
+                            ch = await member.guild.create_voice_channel(voicename, reason=f"VoiceHub | Create Temp Voice Channel For {member}", category=after.channel.category)
                             pr = {}
                             if main_cf.get("full_control"):
                                 pr["manage_permissions"] = True
@@ -56,7 +57,7 @@ class vh(commands.Cog):
                                     db[str(after.channel.id)] = a 
                                 edit_dict["bitrate"] = main_cf["bitrate"] * 1000
                         elif main_cf["type"] == "sc":
-                            ch = await member.guild.create_stage_channel(member.name, position=2147483647, reason=f"VoiceHub | Create Temp Stage Channel For {member}", category=after.channel.category)
+                            ch = await member.guild.create_stage_channel(voicename, position=2147483647, reason=f"VoiceHub | Create Temp Stage Channel For {member}", category=after.channel.category)
                             if main_cf.get("bitrate") is not None:
                                 edit_dict["bitrate"] = main_cf["bitrate"] * 1000
                             pr = {}
@@ -125,6 +126,26 @@ class vh(commands.Cog):
     
     edit_vh_g = app_commands.Group(name="edit", description="voicehub edit command", parent=voicehub_g, default_permissions=discord.Permissions(manage_channels=True))
     
+    @edit_vh_g.command(name="temp_name", description="Set tên mặc định của TempVoice")
+    @app_commands.describe(channel="Kênh VoiceHub", name="${name} = Username | ${nick} = User Display Name")
+    async def vh_cf_bitrate(self, interaction: discord.Interaction, channel:discord.VoiceChannel, name:app_commands.Range[str, 1, 50] = None):
+        ctx = await Interactx(interaction)
+        with database(f"./data/voicehub/{ctx.guild.id}", self.bot.db) as db:
+            if str(channel.id) not in db.keys():
+                embed = discord.Embed(title="Kênh này không phải VoiceHub")
+                await ctx.send(embed=embed)
+                return
+            a = db[str(channel.id)]
+            if (a.get("name") is not None) and name == "{name}":
+                del a["name"]
+            elif name is not None:
+                a["name"] = name
+            elif a.get("name") is not None:
+                del a["name"]
+            db[str(channel.id)] = a
+            embed = discord.Embed(title=f"Đã set tên mặc định của TempVoice")
+            await ctx.send(embed=embed)
+    
     @edit_vh_g.command(name="bitrate", description="Chỉnh VoiceHub Bitrate")
     @app_commands.describe(channel="Kênh VoiceHub", bitrate="Số Bitrate muốn set")
     async def vh_cf_bitrate(self, interaction: discord.Interaction, channel:discord.VoiceChannel, bitrate:app_commands.Range[int, 8, 384]):
@@ -163,7 +184,7 @@ class vh(commands.Cog):
                         del a["bitrate"]
                         db[str(channel.id)] = a
             embed = discord.Embed(title=f"Đã set VoiceHub bitrate thành {bitrate}")
-            await ctx.send(embed=embed) 
+            await ctx.send(embed=embed)
     
     @edit_vh_g.command(name="full_control", description="Cho phép chủ kênh có mọi quền điều khiển temp voice của họ")
     @app_commands.describe(channel="Kênh VoiceHub", var="on/off")
