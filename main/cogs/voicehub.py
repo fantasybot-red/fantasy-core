@@ -128,7 +128,7 @@ class vh(commands.Cog):
     
     @edit_vh_g.command(name="temp_name", description="Set tên mặc định của TempVoice")
     @app_commands.describe(channel="Kênh VoiceHub", name="${name} = Username | ${nick} = User Display Name")
-    async def vh_cf_bitrate(self, interaction: discord.Interaction, channel:discord.VoiceChannel, name:app_commands.Range[str, 1, 50] = None):
+    async def vh_cf_temp_name(self, interaction: discord.Interaction, channel:discord.VoiceChannel, name:app_commands.Range[str, 1, 50] = None):
         ctx = await Interactx(interaction)
         with database(f"./data/voicehub/{ctx.guild.id}", self.bot.db) as db:
             if str(channel.id) not in db.keys():
