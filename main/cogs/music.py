@@ -28,7 +28,9 @@ ytclient = Youtube(os.getenv("MUISC_API_URL"), os.getenv("MUISC_API_AUTH"))
 rspotify = sp.Spotify(os.getenv("MUISC_API_URL"), os.getenv("MUISC_API_AUTH"))
 
 FFMPEG_OPTIONS_O = {
-    'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 10', 'options': '-vn'}
+    'before_options': f'-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 10', 'options': '-vn'}
+if os.getenv("MUISC_API_AUTH") is not None:
+    FFMPEG_OPTIONS_O["before_options"] += f' -headers "Authorization: {os.getenv("MUISC_API_AUTH")}\r\n"'
 
 loopdb = {}
 
