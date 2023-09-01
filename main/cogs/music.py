@@ -24,8 +24,8 @@ from unity.interactx import Interactx
 scclient = sclib.SoundcloudAPI()
 zclient = zingmp3py.ZingMp3Async()
 tw = twitch.TwitchHelix(client_id=os.getenv("TWITCH_ID"), client_secret=os.getenv("TWITCH_SECRER"))
-ytclient = Youtube(os.getenv("MUISC_API_URL"))
-rspotify = sp.Spotify(os.getenv("MUISC_API_URL"))
+ytclient = Youtube(os.getenv("MUISC_API_URL"), os.getenv("MUISC_API_AUTH"))
+rspotify = sp.Spotify(os.getenv("MUISC_API_URL"), os.getenv("MUISC_API_AUTH"))
 
 FFMPEG_OPTIONS_O = {
     'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 10', 'options': '-vn'}
