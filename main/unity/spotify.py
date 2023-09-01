@@ -20,8 +20,8 @@ class Spotify:
     header = {}
     def __init__(self, api_domain, auth=None):
         self.api_domain = api_domain
-        if auth != None:
-           self.header = {"Authorization": self.auth}
+        if auth is not None:
+           self.header = {"Authorization": auth}
     
     def fileurl(self, ids:str):
         return f"https://i.scdn.co/image/{ids.lower()}"
