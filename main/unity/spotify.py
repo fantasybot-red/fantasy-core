@@ -17,8 +17,11 @@ def base62_encode(bytes_obj):
     return base62
 
 class Spotify:
-    def __init__(self, api_domain):
+    header = {}
+    def __init__(self, api_domain, auth=None):
         self.api_domain = api_domain
+        if auth != None:
+           self.header = {"Authorization": self.auth}
     
     def fileurl(self, ids:str):
         return f"https://i.scdn.co/image/{ids.lower()}"
@@ -58,7 +61,7 @@ class Spotify:
                 return None
         else:
             uri = url
-        async with aiohttp.ClientSession(base_url=self.api_domain) as s:
+        async with aiohttp.ClientSession(base_url=self.api_domain, headers=self.header) as s:
             async with s.get(f"/api/sp/loadmeta/{uri}") as r:
                 if r.ok:
                     data = await r.json()

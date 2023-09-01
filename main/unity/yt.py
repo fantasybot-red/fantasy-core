@@ -60,14 +60,19 @@ class YT_Video:
         return self.video_id == other.video_id
 
 class Youtube:
-    def __init__(self, api_domain):
+    
+    header = {}
+    
+    def __init__(self, api_domain, auth=None):
         self.api_domain = api_domain
+        if auth != None:
+           self.header = {"Authorization": self.auth}
 
     async def get_video(self, url):
         vid = video_id(url)
         if vid is None:
             return None
-        async with aiohttp.ClientSession(base_url=self.api_domain) as s:
+        async with aiohttp.ClientSession(base_url=self.api_domain, headers=self.header) as s:
             async with s.get("/api/yt/video", timeout=None, params={"url": vid}) as r:
                 if r.ok:
                     return YT_Video(await r.json())
@@ -75,7 +80,7 @@ class Youtube:
                     return None
 
     async def get_search(self, pram):
-        async with aiohttp.ClientSession(base_url=self.api_domain) as s:
+        async with aiohttp.ClientSession(base_url=self.api_domain, headers=self.header) as s:
             async with s.get("/api/yt/search", timeout=None, params={"q": pram}) as r:
                 if r.ok:
                     return YT_Video(await r.json())
@@ -86,7 +91,7 @@ class Youtube:
         pid = playlist_id(url)
         if pid is None:
             return None
-        async with aiohttp.ClientSession(base_url=self.api_domain) as s:
+        async with aiohttp.ClientSession(base_url=self.api_domain, headers=self.header) as s:
             async with s.get("/api/yt/playlist", timeout=None, params={"url": pid}) as r:
                 if r.ok:
                     return [YT_Video(i) for i in await r.json()]
@@ -97,7 +102,7 @@ class Youtube:
         cid = await is_channel_url(url)
         if cid is None:
             return None
-        async with aiohttp.ClientSession(base_url=self.api_domain) as s:
+        async with aiohttp.ClientSession(base_url=self.api_domain, headers=self.header) as s:
             async with s.get("/api/yt/channel", timeout=None, params={"url": cid}) as r:
                 if r.ok:
                     return [YT_Video(i) for i in await r.json()]
