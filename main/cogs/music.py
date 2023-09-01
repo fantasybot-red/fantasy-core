@@ -28,9 +28,8 @@ ytclient = Youtube(os.getenv("MUISC_API_URL"), os.getenv("MUISC_API_AUTH"))
 rspotify = sp.Spotify(os.getenv("MUISC_API_URL"), os.getenv("MUISC_API_AUTH"))
 
 FFMPEG_OPTIONS_O = {
-    'before_options': f'-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 10', 'options': '-vn'}
-if os.getenv("MUISC_API_AUTH") is not None:
-    FFMPEG_OPTIONS_O["before_options"] += f' -headers "Authorization: {os.getenv("MUISC_API_AUTH")}\r\n"'
+    'before_options': f'-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 10', 'options': '-vn'
+}
 
 loopdb = {}
 
@@ -225,12 +224,12 @@ class Music(commands.Cog):
                 title = " & ".join([i for i in audio.artist]) + " - " +audio.name
                 if not audio.is_playable:
                     raise PermissionError("not playable")
-                URL = f"http://localhost:2000/api/sp/{audio.spotify_uri}"
+                URL = f"{os.getenv('MUISC_API_URL')}/api/sp/{audio.spotify_uri}?auth={os.getenv('MUISC_API_AUTH')}"
             elif type(audio) is sp.Episode:
                 pageurl = audio.spotify_url
                 img_url = audio.coverImage["LARGE"]
                 title = audio.name
-                URL = f"http://localhost:2000/api/sp/{audio.spotify_uri}"
+                URL = f"{os.getenv('MUISC_API_URL')}/api/sp/{audio.spotify_uri}?auth={os.getenv('MUISC_API_AUTH')}"
             url = FFmpegPCMAudio(URL, **FFMPEG_OPTIONS)
             ctx.voice_client.play(url, after=lambda e: asyncio.run_coroutine_threadsafe(self.autoskip(e, ctx), self.bot.loop))
             embed.title = "Đang Play:"
