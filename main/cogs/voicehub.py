@@ -329,7 +329,7 @@ class vh(commands.Cog):
             if await self.check_temp(ctx, channel, db):
                 return
             await channel.edit(nsfw=True if var.value == 1 else False)
-            embed = discord.Embed(title=f"Đã set private thành {var.name}")
+            embed = discord.Embed(title=f"Đã set nsfw thành {var.name}")
             await ctx.send(embed=embed)
             
     @voice_g.command(name="bitrate", description="Chỉnh Bitrate của TempVoice")
