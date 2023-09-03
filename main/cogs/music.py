@@ -611,6 +611,32 @@ class Music(commands.Cog):
                 await ctx.reply("**Bot Đang chả play gì cả**")
         else:
             await ctx.reply("**Bạn chưa vào voice**")
+    
+    @app_commands.command(name="previous", description="Play previous music")
+    async def previous(self, interaction: discord.Interaction):
+        ctx = await Interactx(interaction)
+        if ctx.author.voice is not None:
+            if ctx.voice_client is not None:
+                if ctx.author.voice.channel == ctx.voice_client.channel:
+                    nowp = musisc_queue[str(ctx.guild.id)].queue()[0]
+                    prev = musisc_queue[str(ctx.guild.id)].prev()
+                    if prev is not None:
+                        skipd = await QueueData(nowp)
+                        nextd = await QueueData(prev)
+                        text_loop_mode = get_music_loop_text(ctx.guild.id)
+                        embed = discord.Embed(title="Previous", description=f"**Loop mode: {text_loop_mode}**")
+                        embed.add_field(name="Đã previous:", value=f"**[{skipd[0]}]({skipd[1]})**", inline=False)
+                        embed.add_field(name="Đang Play", value=f"**[{nextd[0]}]({nextd[1]})**", inline=False)
+                        await ctx.reply(embed=embed)
+                        ctx.voice_client.stop()
+                    else:
+                        await ctx.reply("**Không có bài trước đấy :/**")
+                else:
+                    await ctx.reply("**Bạn không ở chung voice với bot**")
+            else:
+                await ctx.reply("**Bot Đang chả play gì cả**")
+        else:
+            await ctx.reply("**Bạn chưa vào voice**")
 
     @app_commands.command(name="pause", description="Pause music")
     async def pause(self, interaction: discord.Interaction):
