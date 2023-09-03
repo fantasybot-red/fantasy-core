@@ -46,11 +46,15 @@ class MusicQueue(list):
         return self[self.nowplaying]
 
     def prev(self):
+        
+        if self.loop == 1:
+            return self[self.nowplaying]
+        
         self.nowplaying -= 2
         if self.nowplaying+1 >= 0:
             return self[self.nowplaying+1]
         else:
-            self.nowplaying += 1
+            self.nowplaying += 2
 
     def __next__(self):
         self.nowplaying += 1
