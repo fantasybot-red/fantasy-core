@@ -583,6 +583,9 @@ class Music(commands.Cog):
         if ctx.author.voice is not None:
             if ctx.voice_client is not None:
                 if ctx.author.voice.channel == ctx.voice_client.channel:
+                    if musisc_queue[str(ctx.guild.id)].loop == 1:
+                        await ctx.reply("**Skip không dùng được khi loop mode là Track**")
+                        return
                     queue = musisc_queue[str(ctx.guild.id)].queue()
                     loop_mode = get_music_loop(ctx.guild.id)
                     if len(queue) > 1 or loop_mode > 0:
@@ -618,6 +621,9 @@ class Music(commands.Cog):
         if ctx.author.voice is not None:
             if ctx.voice_client is not None:
                 if ctx.author.voice.channel == ctx.voice_client.channel:
+                    if musisc_queue[str(ctx.guild.id)].loop == 1:
+                        await ctx.reply("**Previous không dùng được khi loop mode là Track**")
+                        return
                     nowp = musisc_queue[str(ctx.guild.id)].queue()[0]
                     prev = musisc_queue[str(ctx.guild.id)].prev()
                     if prev is not None:
