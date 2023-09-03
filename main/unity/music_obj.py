@@ -25,3 +25,46 @@ async def QueueData(data):
         title = data.name
     return (title, url)
 
+class MusicQueue(list):
+    nowplaying = -1
+    loop = 0
+    volume = 100
+
+    def __init__(self):
+        pass
+
+    def get_volume_ff(self):
+        return self.volume / 100
+
+    def queue(self):
+        return self[self.nowplaying:]
+
+    def add_queue(self, data):
+        return self.extend(data)
+
+    def now_playing(self):
+        return self[self.nowplaying]
+
+    def prev(self):
+        self.nowplaying -= 2
+        if self.nowplaying+1 >= 0:
+            return self[self.nowplaying+1]
+        else:
+            self.nowplaying += 1
+
+    def __next__(self):
+        self.nowplaying += 1
+        if self.loop == 1:
+            if self.nowplaying != 0:
+                self.nowplaying -= 1
+        elif self.loop == 2:
+            self.append(self[self.nowplaying-1])
+        if len(self[:self.nowplaying]) >= 30:
+            del self[0]
+            self.nowplaying -= 1
+        if self.nowplaying >= len(self):
+            self.nowplaying = len(self)-1
+            return None
+        return self[self.nowplaying]
+
+

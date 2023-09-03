@@ -14,7 +14,7 @@ import unity.spotify as sp
 from spotipy2 import Spotify
 from spotipy2.auth import ClientCredentialsFlow
 from unitiprefix import get_prefix
-from unity.music_obj import QueueData
+from unity.music_obj import QueueData, MusicQueue
 from unity.yt import YT_Video, Youtube
 from discord import FFmpegPCMAudio
 from discord.ext import commands
@@ -31,31 +31,15 @@ FFMPEG_OPTIONS_O = {
     'before_options': f'-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 10', 'options': '-vn'
 }
 
-loopdb = {}
 
 musisc_queue = {}
 
-def del_music_loop(guild_id):
-        try:
-            del loopdb[str(guild_id)]
-        except KeyError:
-            pass
 
 def get_music_loop(guild_id):
-    try:
-        loop_mode = loopdb[str(guild_id)]
-    except KeyError:
-        loop_mode = 0
-    return loop_mode
+    return musisc_queue[str(guild_id)].loop
 
 def set_music_loop(guild_id, loop_mode):
-    if loop_mode != 0:
-        loopdb[str(guild_id)] = loop_mode
-    else:
-        try:
-          del loopdb[str(guild_id)]
-        except KeyError:
-            pass
+    musisc_queue[str(guild_id)].loop = loop_mode
             
 def get_music_loop_text(guild_id):
     loopid = get_music_loop(guild_id)
@@ -127,7 +111,6 @@ class Music(commands.Cog):
                                 del musisc_queue[str(member.guild.id)]
                             except BaseException:
                                 pass
-                            del_music_loop(member.guild.id)
 
         else:
             if before.channel is not None:
@@ -146,10 +129,13 @@ class Music(commands.Cog):
                                     del musisc_queue[str(member.guild.id)]
                                 except BaseException:
                                     pass
-                                del_music_loop(member.guild.id)
                         else:
                             try:
                                 await member.guild.change_voice_state(channel=after.channel, self_mute=False, self_deaf=True)
+                            except BaseException:
+                                pass
+                            try:
+                                member.guild.voice_client.resume()
                             except BaseException:
                                 pass
                 else:
@@ -164,14 +150,7 @@ class Music(commands.Cog):
                     try:
                         del musisc_queue[str(member.guild.id)]
                     except BaseException:
-                        pass
-                    del_music_loop(member.guild.id)
-                            
-    async def get_sp_artwork(self, uri):
-        async with aiohttp.ClientSession() as s:
-            async with s.get("https://open.spotify.com/oembed", params={"url": uri}) as r:
-                return (await r.json())["thumbnail_url"]         
-                
+                        pass                
 
     async def play_audio(self, ctx, audio, mess):
         try:
@@ -230,7 +209,7 @@ class Music(commands.Cog):
                 img_url = audio.coverImage["LARGE"]
                 title = audio.name
                 URL = f"{os.getenv('MUISC_API_URL')}/api/sp/{audio.spotify_uri}?auth={os.getenv('MUISC_API_AUTH')}"
-            url = FFmpegPCMAudio(URL, **FFMPEG_OPTIONS)
+            url = discord.PCMVolumeTransformer(FFmpegPCMAudio(URL, **FFMPEG_OPTIONS), volume=musisc_queue[str(ctx.guild.id)].get_volume_ff())
             ctx.voice_client.play(url, after=lambda e: asyncio.run_coroutine_threadsafe(self.autoskip(e, ctx), self.bot.loop))
             embed.title = "Đang Play:"
             embed.description = f"**[{title}]({pageurl})**"
@@ -259,20 +238,8 @@ class Music(commands.Cog):
         queue = musisc_queue.get(str(ctx.guild.id), None)
         check = ctx.voice_client
         if (check is not None) and (queue is not None):
-            loop_mode = get_music_loop(ctx.guild.id)
-            if len(queue) > 1 or (not mess is None) or loop_mode > 0:
-                if mess is not None:
-                    audio = queue[0]
-                if mess is None:
-                    if loop_mode == 2:
-                        queue.append(queue.pop(0))
-                        audio = queue[0]
-                    elif loop_mode == 1:
-                        audio = queue[0]
-                    elif loop_mode == 0:
-                        audio = queue[1]
-                        del queue[0]
-                musisc_queue[str(ctx.guild.id)] = queue
+            audio = next(musisc_queue[str(ctx.guild.id)])
+            if audio is not None:
                 await self.play_audio(ctx, audio, mess)
             else:
                 try:
@@ -300,7 +267,6 @@ class Music(commands.Cog):
                 ctx.voice_client.cleanup()
             except BaseException:
                 pass
-            del_music_loop(ctx.guild.id)
 
     async def load_audio(self, mess, url):
         url = url.strip()
@@ -556,7 +522,6 @@ class Music(commands.Cog):
                         del musisc_queue[str(ctx.guild.id)]
                     except BaseException:
                         pass
-                    del_music_loop(ctx.guild.id)
                     await ctx.send("**Đã dừng nhạc và thoát**")
                 else:
                     await ctx.reply("**Bạn không ở chung voice với bot**")
@@ -595,7 +560,22 @@ class Music(commands.Cog):
                 await ctx.reply("**Bot Đang chả play gì cả**")
         else:
             await ctx.reply("**Bạn chưa vào voice**")
-            
+    
+    @app_commands.command(name="volume", description="Set music volume")
+    async def volume(self, interaction: discord.Interaction, volume:app_commands.Range[int, 0, 100]):
+        ctx = await Interactx(interaction)
+        if ctx.author.voice is not None:
+            if ctx.voice_client is not None:
+                if ctx.author.voice.channel == ctx.voice_client.channel:
+                    musisc_queue[str(ctx.guild.id)].volume = volume
+                    ctx.voice_client.source.volume = musisc_queue[str(ctx.guild.id)].get_volume_ff()
+                    await ctx.reply(f"**Đã set {volume}% volume**")
+                else:
+                    await ctx.reply("**Bạn không ở chung voice với bot**")
+            else:
+                await ctx.reply("**Bot Đang chả play gì cả**")
+        else:
+            await ctx.reply("**Bạn chưa vào voice**")
     
     @app_commands.command(name="skip", description="Skip music")
     async def skip(self, interaction: discord.Interaction):
@@ -603,7 +583,7 @@ class Music(commands.Cog):
         if ctx.author.voice is not None:
             if ctx.voice_client is not None:
                 if ctx.author.voice.channel == ctx.voice_client.channel:
-                    queue = musisc_queue.get(str(ctx.guild.id), [])
+                    queue = musisc_queue[str(ctx.guild.id)].queue()
                     loop_mode = get_music_loop(ctx.guild.id)
                     if len(queue) > 1 or loop_mode > 0:
                         skipd = await QueueData(queue[0])
@@ -670,7 +650,7 @@ class Music(commands.Cog):
                 if ctx.author.voice.channel == ctx.voice_client.channel:
                     embed = discord.Embed(title="Đang load queue")
                     edit = await ctx.reply(embed=embed)
-                    queue = musisc_queue.get(str(ctx.guild.id), [])
+                    queue = musisc_queue[str(ctx.guild.id)].queue()
                     queuelist = []
                     for t, i in enumerate(queue[:6]):
                         if not t == 0:
@@ -699,7 +679,7 @@ class Music(commands.Cog):
         if ctx.author.voice is not None:
             if ctx.voice_client is not None:
                 if ctx.author.voice.channel == ctx.voice_client.channel:
-                    listu = musisc_queue.get(str(ctx.guild.id), [])
+                    listu = musisc_queue[str(ctx.guild.id)].queue()
                     loop_mode = get_music_loop_text(ctx.guild.id)
                     embed = discord.Embed(title="Now Playing", description=f"**Loop Mode:** {loop_mode}")
                     data = await QueueData(listu[0])
@@ -754,9 +734,10 @@ class Music(commands.Cog):
                         pass
                     queue = await self.load_audio(mess, url)
                     if queue is not None and (ctx.voice_client is not None):
-                        ql = musisc_queue.get(str(ctx.guild.id), [])
-                        ql.extend(queue)
-                        musisc_queue[str(ctx.guild.id)] = ql
+                        ql = musisc_queue.get(str(ctx.guild.id))
+                        if ql is None:
+                            musisc_queue[str(ctx.guild.id)] = MusicQueue()
+                        musisc_queue[str(ctx.guild.id)].add_queue(queue)
                         asyncio.create_task(self.skip_audio(ctx, mess))
                     else:
                         try:
@@ -781,9 +762,10 @@ class Music(commands.Cog):
                                         pass
                             except BaseException:
                                 pass
-                            queue = musisc_queue.get(str(ctx.guild.id), [])
-                            queue.extend(nqueue)
-                            musisc_queue[str(ctx.guild.id)] = queue
+                            ql = musisc_queue.get(str(ctx.guild.id))
+                            if ql is None:
+                                musisc_queue[str(ctx.guild.id)] = MusicQueue()
+                            musisc_queue[str(ctx.guild.id)].add_queue(nqueue)
                     else:
                         await ctx.reply("**Bạn không ở chung voice với bot**")
             else:
