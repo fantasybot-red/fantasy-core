@@ -78,9 +78,6 @@ class Music(commands.Cog):
             if (await check_m(ctx)) is not None:
                 return
             await self.skip.callback(self, ctx)
-            oldct = interaction.message.content
-            await interaction.message.edit(content=interaction.user.mention)
-            await interaction.message.edit(content=oldct)
         
         @bot.ev.interaction(name=r"m\.previous")
         async def on_previous(interaction: discord.Interaction):
@@ -88,9 +85,6 @@ class Music(commands.Cog):
             if (await check_m(ctx)) is not None:
                 return
             await self.previous.callback(self, ctx)
-            oldct = interaction.message.content      
-            await interaction.message.edit(content=interaction.user.mention)
-            await interaction.message.edit(content=oldct)
         
         
         @bot.ev.interaction(name=r"m\.resume|pause")
@@ -102,9 +96,6 @@ class Music(commands.Cog):
                 await self.resume.callback(self, ctx)
             else:
                 await self.pause.callback(self, ctx)
-            oldct = interaction.message.content         
-            await interaction.message.edit(content=interaction.user.mention)
-            await interaction.message.edit(content=oldct)
         
         @bot.ev.interaction(name=r"m\.nowplaying")
         async def on_nowplaying(interaction: discord.Interaction):
@@ -112,9 +103,6 @@ class Music(commands.Cog):
             if (await check_m(ctx)) is not None:
                 return
             await self.nowplaying.callback(self, ctx)
-            oldct = interaction.message.content      
-            await interaction.message.edit(content=interaction.user.mention)
-            await interaction.message.edit(content=oldct)
         
         @bot.ev.interaction(name=r"m\.queue")
         async def on_queue(interaction: discord.Interaction):
@@ -122,9 +110,6 @@ class Music(commands.Cog):
             if (await check_m(ctx)) is not None:
                 return
             await self.queue.callback(self, ctx)
-            oldct = interaction.message.content
-            await interaction.message.edit(content=interaction.user.mention)
-            await interaction.message.edit(content=oldct)
         
         @bot.ev.interaction(name=r"m\.loop")
         async def on_volume(interaction: discord.Interaction):
@@ -158,7 +143,7 @@ class Music(commands.Cog):
                 data = int(dataout)
             except ValueError:
                 return await ctx.reply("**Input không hợp lệ**", ephemeral=True)
-            if not ((0 <= data) and (data <= 100)):
+            if not (0 <= data <= 100):
                 return await ctx.reply(f"**Input cần trong khoảng 0 đến 100**", ephemeral=True)
             await self.volume.callback(self, ctx, volume=data)
                 
@@ -700,7 +685,7 @@ class Music(commands.Cog):
                             else:
                                 nextd = await QueueData(queue[0])
                         text_loop_mode = get_music_loop_text(ctx.guild.id)
-                        embed = discord.Embed(title="Skip", description=f"**Loop mode: {text_loop_mode}**")
+                        embed = discord.Embed(title="Skip", description=f"**Loop mode:** {text_loop_mode}\n**Volume:** {musisc_queue[str(ctx.guild.id)].volume}%")
                         embed.add_field(name="Đã skip:", value=f"**[{skipd[0]}]({skipd[1]})**", inline=False)
                         embed.add_field(name="Đang Play", value=f"**[{nextd[0]}]({nextd[1]})**", inline=False)
                         await ctx.reply(embed=embed)
@@ -730,7 +715,7 @@ class Music(commands.Cog):
                         skipd = await QueueData(nowp)
                         nextd = await QueueData(prev)
                         text_loop_mode = get_music_loop_text(ctx.guild.id)
-                        embed = discord.Embed(title="Previous", description=f"**Loop mode: {text_loop_mode}**")
+                        embed = discord.Embed(title="Previous", description=f"**Loop mode:** {text_loop_mode}\n**Volume:** {musisc_queue[str(ctx.guild.id)].volume}%")
                         embed.add_field(name="Đã previous:", value=f"**[{skipd[0]}]({skipd[1]})**", inline=False)
                         embed.add_field(name="Đang Play", value=f"**[{nextd[0]}]({nextd[1]})**", inline=False)
                         await ctx.reply(embed=embed)
@@ -796,7 +781,7 @@ class Music(commands.Cog):
                         queuelist = "\n"+"\n".join(queuelist)
                     data = await QueueData(queue[0])
                     loop_mode = get_music_loop_text(ctx.guild.id)
-                    embed = discord.Embed(title="Queue", description=f"**Loop mode: {loop_mode}**\n**Đang play: [{data[0]}]({data[1]})**{queuelist}")
+                    embed = discord.Embed(title="Queue", description=f"**Loop mode:** {loop_mode}\n**Volume:** {musisc_queue[str(ctx.guild.id)].volume}%\n**Đang play: [{data[0]}]({data[1]})**{queuelist}")
                     await edit.edit(embed=embed)
                 else:
                     await ctx.reply("**Bạn không ở chung voice với bot**")
@@ -818,7 +803,7 @@ class Music(commands.Cog):
                 if ctx.author.voice.channel == ctx.voice_client.channel:
                     listu = musisc_queue[str(ctx.guild.id)].queue()
                     loop_mode = get_music_loop_text(ctx.guild.id)
-                    embed = discord.Embed(title="Now Playing", description=f"**Loop Mode:** {loop_mode}")
+                    embed = discord.Embed(title="Now Playing", description=f"**Loop Mode:** {loop_mode}\n**Volume:** {musisc_queue[str(ctx.guild.id)].volume}%")
                     data = await QueueData(listu[0])
                     embed.add_field(name=f"Đang phát:",
                                     value=f"**[{data[0]}]({data[1]})**",
