@@ -482,9 +482,9 @@ async def on_interaction(interaction: discord.Interaction):
     if interaction.type == discord.InteractionType.component or interaction.type == discord.InteractionType.modal_submit:
         components = get_components(interaction)
         out = await bot.ev.trigger(interaction.data["custom_id"], interaction, components)
-        data = list(bot._connection._view_store._modals.keys())
-        data.extend([e[1] for i in bot._connection._view_store._views.values() for e in i.keys()])
-        if (not interaction.data["custom_id"] in data) and (not out):
+        bt = bool(not interaction.data["custom_id"] in list(bot._connection._view_store._modals.keys()))
+        md = bool(not interaction.data["custom_id"] in [e[1] for i in bot._connection._view_store._views.values() for e in i.keys()])
+        if (bt and md) and (not out):
             await interaction.response.send_message("**Timeout**", ephemeral=True)
 
 
