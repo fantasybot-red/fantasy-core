@@ -84,7 +84,6 @@ def get_components(obj: discord.Interaction) -> dict:
     rdata = {}
     def get_components_d(data: list):
         for i in data:
-            print(i)
             if i["type"] == 1:
                 get_components_d(i["components"])
             elif i["type"] == 4:
