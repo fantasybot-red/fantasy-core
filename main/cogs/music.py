@@ -78,6 +78,9 @@ class Music(commands.Cog):
             if (await check_m(ctx)) is not None:
                 return
             await self.skip.callback(self, ctx)
+                      
+            await interaction.message.edit(content=interaction.user.mention)
+            await interaction.message.edit(content=oldct)
         
         @bot.ev.interaction(name=r"m\.previous")
         async def on_previous(interaction: discord.Interaction):
@@ -85,6 +88,9 @@ class Music(commands.Cog):
             if (await check_m(ctx)) is not None:
                 return
             await self.previous.callback(self, ctx)
+                        
+            await interaction.message.edit(content=interaction.user.mention)
+            await interaction.message.edit(content=oldct)
         
         
         @bot.ev.interaction(name=r"m\.resume|pause")
@@ -96,6 +102,9 @@ class Music(commands.Cog):
                 await self.resume.callback(self, ctx)
             else:
                 await self.pause.callback(self, ctx)
+                        
+            await interaction.message.edit(content=interaction.user.mention)
+            await interaction.message.edit(content=oldct)
         
         @bot.ev.interaction(name=r"m\.nowplaying")
         async def on_nowplaying(interaction: discord.Interaction):
@@ -103,6 +112,9 @@ class Music(commands.Cog):
             if (await check_m(ctx)) is not None:
                 return
             await self.nowplaying.callback(self, ctx)
+                        
+            await interaction.message.edit(content=interaction.user.mention)
+            await interaction.message.edit(content=oldct)
         
         @bot.ev.interaction(name=r"m\.queue")
         async def on_queue(interaction: discord.Interaction):
@@ -110,6 +122,9 @@ class Music(commands.Cog):
             if (await check_m(ctx)) is not None:
                 return
             await self.queue.callback(self, ctx)
+            
+            await interaction.message.edit(content=interaction.user.mention)
+            await interaction.message.edit(content=oldct)
         
         @bot.ev.interaction(name=r"m\.loop")
         async def on_volume(interaction: discord.Interaction):
@@ -119,10 +134,11 @@ class Music(commands.Cog):
                 await interaction.message.edit(content=interaction.user.mention)
                 await interaction.message.edit(content=oldct)
                 return
-            await interaction.response.edit_message(content=interaction.user.mention)
-            await interaction.message.edit(content=oldct)
             mode = interaction.data["values"][0]
             await self.loop.callback(self, ctx, mode=app_commands.Choice(name="a", value=mode))
+            
+            await interaction.message.edit(content=interaction.user.mention)
+            await interaction.message.edit(content=oldct)
         
         @bot.ev.interaction(name=r"m\.volume_bt")
         async def on_volume_bt(interaction: discord.Interaction):
@@ -789,7 +805,7 @@ class Music(commands.Cog):
         else:
             await ctx.reply("**Bạn chưa vào voice**")
     
-    @app_commands.command(name="player", description="mở music player controle.")
+    @app_commands.command(name="player_control", description="mở music player control.")
     async def player(self, interaction: discord.Interaction):
         ctx = await Interactx(interaction)
         await ctx.send(view=Music_bt())
