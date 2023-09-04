@@ -158,8 +158,8 @@ class Music(commands.Cog):
                 data = int(dataout)
             except ValueError:
                 return await ctx.reply("**Input không hợp lệ**", ephemeral=True)
-            if 0 <= data <= 100:
-                return await ctx.reply(f"**Input cần lớn hơn -1 và bé hơn 101 :>**", ephemeral=True)
+            if (0 <= data) and (data <= 100):
+                return await ctx.reply(f"**Input cần trong khoảng 0 đến 100**", ephemeral=True)
             await self.volume.callback(self, ctx, volume=data)
                 
                 
