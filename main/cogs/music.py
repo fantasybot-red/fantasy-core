@@ -64,52 +64,86 @@ class Music(commands.Cog):
         self.bot = bot
         self.spotify = sp
         
+        async def check_m(ctx):
+            if ctx.author.voice is None:
+                return await ctx.reply("**Bạn chưa vào voice**", ephemeral=True)
+            if ctx.voice_client is None:
+                return await ctx.reply("**Bot Đang chả play gì cả**", ephemeral=True)
+            if ctx.author.voice.channel != ctx.voice_client.channel:
+                return await ctx.reply("**Bạn không ở chung voice với bot**", ephemeral=True)
+        
         @bot.ev.interaction(name=r"m\.skip")
         async def on_skip(interaction: discord.Interaction):
             ctx = await Interactx(interaction, start=False)
+            if (await check_m(ctx)) is not None:
+                return
             await self.skip.callback(self, ctx)
         
         @bot.ev.interaction(name=r"m\.previous")
         async def on_previous(interaction: discord.Interaction):
             ctx = await Interactx(interaction, start=False)
+            if (await check_m(ctx)) is not None:
+                return
             await self.previous.callback(self, ctx)
         
         
         @bot.ev.interaction(name=r"m\.resume|pause")
         async def on_pause(interaction: discord.Interaction):
             ctx = await Interactx(interaction, start=False)
-            if ctx.author.voice is None:
-                return await ctx.reply("**Bạn chưa vào voice**")
-            if ctx.voice_client is None:
-                return await ctx.reply("**Bot Đang chả play gì cả**")
-            if ctx.author.voice.channel != ctx.voice_client.channel:
-                return await ctx.reply("**Bạn không ở chung voice với bot**")
+            if (await check_m(ctx)) is not None:
+                return
             if ctx.voice_client.is_paused():
                 await self.resume.callback(self, ctx)
             else:
                 await self.pause.callback(self, ctx)
         
+        @bot.ev.interaction(name=r"m\.nowplaying")
+        async def on_nowplaying(interaction: discord.Interaction):
+            ctx = await Interactx(interaction, start=False)
+            if (await check_m(ctx)) is not None:
+                return
+            await self.nowplaying.callback(self, ctx)
+        
+        @bot.ev.interaction(name=r"m\.queue")
+        async def on_queue(interaction: discord.Interaction):
+            ctx = await Interactx(interaction, start=False)
+            if (await check_m(ctx)) is not None:
+                return
+            await self.queue.callback(self, ctx)
+        
         @bot.ev.interaction(name=r"m\.loop")
         async def on_volume(interaction: discord.Interaction):
             ctx = await Interactx(interaction, start=False)
+            oldct = interaction.message.content
+            if (await check_m(ctx)) is not None:
+                await interaction.message.edit(content=interaction.user.mention)
+                await interaction.message.edit(content=oldct)
+                return
+            await interaction.response.edit_message(content=interaction.user.mention)
+            await interaction.message.edit(content=oldct)
             mode = interaction.data["values"][0]
             await self.loop.callback(self, ctx, mode=app_commands.Choice(name="a", value=mode))
         
         @bot.ev.interaction(name=r"m\.volume_bt")
         async def on_volume_bt(interaction: discord.Interaction):
+            ctx = await Interactx(interaction, start=False)
+            if (await check_m(ctx)) is not None:
+                return
             await interaction.response.send_modal(Music_Volume())
             
         
         @bot.ev.interaction(name=r"m\.volume_md")
         async def on_volume_md(interaction: discord.Interaction, data_input:dict):
             ctx = await Interactx(interaction, start=False)
+            if (await check_m(ctx)) is not None:
+                return
             dataout = data_input.get("m.voice_ip")
             try:
                 data = int(dataout)
             except ValueError:
-                return await ctx.reply("**Input không hợp lệ**")
+                return await ctx.reply("**Input không hợp lệ**", ephemeral=True)
             if 0 <= data <= 100:
-                return await ctx.reply(f"**Input cần lớn hơn -1 và bé hơn 101 :>**")
+                return await ctx.reply(f"**Input cần lớn hơn -1 và bé hơn 101 :>**", ephemeral=True)
             await self.volume.callback(self, ctx, volume=data)
                 
                 
@@ -266,7 +300,7 @@ class Music(commands.Cog):
             embed.set_thumbnail(url=img_url)
             if mess is not None:
                 try:
-                    await mess.edit(embed=embed)
+                    await mess.edit(embed=embed, view=Music_bt())
                 except BaseException:
                     pass
         except Exception:
@@ -758,7 +792,7 @@ class Music(commands.Cog):
     @app_commands.command(name="player", description="mở music player controle.")
     async def player(self, interaction: discord.Interaction):
         ctx = await Interactx(interaction)
-        await ctx.send(Music_bt())
+        await ctx.send(view=Music_bt())
     
     @app_commands.command(name="nowplaying", description="Xem bàì đang play và bài tiếp theo.")
     async def nowplaying(self, interaction: discord.Interaction):

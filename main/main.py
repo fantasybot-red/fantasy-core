@@ -479,13 +479,12 @@ async def on_delmess(interaction: discord.Interaction, user_id):
 
 @bot.event
 async def on_interaction(interaction: discord.Interaction):
-    if interaction.type == discord.InteractionType.modal_submit:
-        if not interaction.data["custom_id"] in list(bot._connection._view_store._modals.keys()):
-            await interaction.response.send_message("**Timeout**", ephemeral=True)
-    elif interaction.type == discord.InteractionType.component:
+    if interaction.type == discord.InteractionType.component or interaction.type == discord.InteractionType.modal_submit:
         components = get_components(interaction)
         out = await bot.ev.trigger(interaction.data["custom_id"], interaction, components)
-        if (not interaction.data["custom_id"] in [e[1] for i in bot._connection._view_store._views.values() for e in i.keys()]) and (not out):
+        data = list(bot._connection._view_store._modals.keys())
+        data.extend([e[1] for i in bot._connection._view_store._views.values() for e in i.keys()])
+        if (not interaction.data["custom_id"] in data) and (not out):
             await interaction.response.send_message("**Timeout**", ephemeral=True)
 
 

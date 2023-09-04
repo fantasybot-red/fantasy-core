@@ -20,13 +20,15 @@ class Music_bt(discord.ui.View):
         self.add_item(discord.ui.Button(emoji="⏯️", custom_id="m.resume|pause"))
         self.add_item(discord.ui.Button(emoji="⏭️", custom_id="m.skip"))
         self.add_item(discord.ui.Button(emoji="🔊", custom_id="m.volume_bt"))
+        self.add_item(discord.ui.Button(emoji="🎶", label="Now Playing", row=2, custom_id="m.nowplaying"))
+        self.add_item(discord.ui.Button(emoji="📜", label="Queue", row=2, custom_id="m.queue"))
         self.add_item(discord.ui.Select(placeholder="Chọn loop mode",
             options=[
-                discord.SelectOption(name='Off', value="off"),
-                discord.SelectOption(name='Track', value="track"),
-                discord.SelectOption(name='Queue', value="queue")
+                discord.SelectOption(label='Off', value="off"),
+                discord.SelectOption(label='Track', value="track"),
+                discord.SelectOption(label='Queue', value="queue")
             ], 
-            custom_id="m.loop"))
+            custom_id="m.loop", row=3))
 
 class Music_Volume(discord.ui.Modal):
     def __init__(self):
