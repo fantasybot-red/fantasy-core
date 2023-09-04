@@ -84,6 +84,7 @@ def get_components(obj: discord.Interaction) -> dict:
     rdata = {}
     def get_components_d(data: list):
         for i in data:
+            print(i)
             if i["type"] == 1:
                 get_components_d(i["components"])
             elif i["type"] == 4:
@@ -94,7 +95,7 @@ def get_components(obj: discord.Interaction) -> dict:
                 rdata[i["custom_id"]] = None
     if obj.data.get("components") is None:
         return
-    get_components_d(["components"])
+    get_components_d(obj.data["components"])
     return rdata
         
                 
