@@ -78,7 +78,7 @@ class Music(commands.Cog):
             if (await check_m(ctx)) is not None:
                 return
             await self.skip.callback(self, ctx)
-                      
+            oldct = interaction.message.content
             await interaction.message.edit(content=interaction.user.mention)
             await interaction.message.edit(content=oldct)
         
@@ -88,7 +88,7 @@ class Music(commands.Cog):
             if (await check_m(ctx)) is not None:
                 return
             await self.previous.callback(self, ctx)
-                        
+            oldct = interaction.message.content      
             await interaction.message.edit(content=interaction.user.mention)
             await interaction.message.edit(content=oldct)
         
@@ -102,7 +102,7 @@ class Music(commands.Cog):
                 await self.resume.callback(self, ctx)
             else:
                 await self.pause.callback(self, ctx)
-                        
+            oldct = interaction.message.content         
             await interaction.message.edit(content=interaction.user.mention)
             await interaction.message.edit(content=oldct)
         
@@ -112,7 +112,7 @@ class Music(commands.Cog):
             if (await check_m(ctx)) is not None:
                 return
             await self.nowplaying.callback(self, ctx)
-                        
+            oldct = interaction.message.content      
             await interaction.message.edit(content=interaction.user.mention)
             await interaction.message.edit(content=oldct)
         
@@ -122,7 +122,7 @@ class Music(commands.Cog):
             if (await check_m(ctx)) is not None:
                 return
             await self.queue.callback(self, ctx)
-            
+            oldct = interaction.message.content
             await interaction.message.edit(content=interaction.user.mention)
             await interaction.message.edit(content=oldct)
         
