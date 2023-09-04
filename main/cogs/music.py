@@ -20,6 +20,7 @@ from discord import FFmpegPCMAudio
 from discord.ext import commands
 from discord import app_commands
 from unity.interactx import Interactx
+from unity.global_ui import Music_Volume, Music_bt
 
 scclient = sclib.SoundcloudAPI()
 zclient = zingmp3py.ZingMp3Async()
@@ -66,28 +67,50 @@ class Music(commands.Cog):
         @bot.ev.interaction(name=r"m\.skip")
         async def on_skip(interaction: discord.Interaction):
             ctx = await Interactx(interaction, start=False)
-            await self.skip(ctx)
+            await self.skip.callback(self, ctx)
         
         @bot.ev.interaction(name=r"m\.previous")
         async def on_previous(interaction: discord.Interaction):
             ctx = await Interactx(interaction, start=False)
-            await self.previous(ctx)
+            await self.previous.callback(self, ctx)
         
-        @bot.ev.interaction(name=r"m\.resume")
-        async def on_resume(interaction: discord.Interaction):
-            ctx = await Interactx(interaction, start=False)
-            await self.resume(ctx)
         
-        @bot.ev.interaction(name=r"m\.pause")
+        @bot.ev.interaction(name=r"m\.resume|pause")
         async def on_pause(interaction: discord.Interaction):
             ctx = await Interactx(interaction, start=False)
-            await self.pause(ctx)
-            
+            if ctx.author.voice is None:
+                return await ctx.reply("**Bạn chưa vào voice**")
+            if ctx.voice_client is None:
+                return await ctx.reply("**Bot Đang chả play gì cả**")
+            if ctx.author.voice.channel != ctx.voice_client.channel:
+                return await ctx.reply("**Bạn không ở chung voice với bot**")
+            if ctx.voice_client.is_paused():
+                await self.resume.callback(self, ctx)
+            else:
+                await self.pause.callback(self, ctx)
         
-        @bot.ev.interaction(name=r"m\.volume_ip")
+        @bot.ev.interaction(name=r"m\.loop")
         async def on_volume(interaction: discord.Interaction):
             ctx = await Interactx(interaction, start=False)
-            await self.volume(ctx)
+            mode = interaction.data["values"][0]
+            await self.loop.callback(self, ctx, mode=app_commands.Choice(name="a", value=mode))
+        
+        @bot.ev.interaction(name=r"m\.volume_bt")
+        async def on_volume_bt(interaction: discord.Interaction):
+            await interaction.response.send_modal(Music_Volume())
+            
+        
+        @bot.ev.interaction(name=r"m\.volume_md")
+        async def on_volume_md(interaction: discord.Interaction, data_input:dict):
+            ctx = await Interactx(interaction, start=False)
+            dataout = data_input.get("m.voice_ip")
+            try:
+                data = int(dataout)
+            except ValueError:
+                return await ctx.reply("**Input không hợp lệ**")
+            if 0 <= data <= 100:
+                return await ctx.reply(f"**Input cần lớn hơn -1 và bé hơn 101 :>**")
+            await self.volume.callback(self, ctx, volume=data)
                 
                 
     async def music_autocomplete(self, interaction, current: str):
@@ -731,6 +754,11 @@ class Music(commands.Cog):
                 await ctx.reply("**Bot Đang chả play gì cả**")
         else:
             await ctx.reply("**Bạn chưa vào voice**")
+    
+    @app_commands.command(name="player", description="mở music player controle.")
+    async def player(self, interaction: discord.Interaction):
+        ctx = await Interactx(interaction)
+        await ctx.send(Music_bt())
     
     @app_commands.command(name="nowplaying", description="Xem bàì đang play và bài tiếp theo.")
     async def nowplaying(self, interaction: discord.Interaction):
