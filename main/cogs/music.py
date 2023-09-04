@@ -82,9 +82,6 @@ class Music(commands.Cog):
         async def on_pause(interaction: discord.Interaction):
             ctx = await Interactx(interaction, start=False)
             await self.pause(ctx)
-        
-        @bot.ev.interaction(name=r"m\.volume")
-        async def on_volume(interaction: discord.Interaction):
             
         
         @bot.ev.interaction(name=r"m\.volume_ip")
