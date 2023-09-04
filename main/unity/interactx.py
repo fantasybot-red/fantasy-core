@@ -32,3 +32,24 @@ async def Interactx(obj: discord.Interaction, *, ephemeral: bool = False, start:
     else:
         newctx = obj
     return newctx
+
+def get_components(obj: discord.Interaction) -> dict:
+    rdata = {}
+    def get_components_d(data: list):
+        for i in data:
+            if i["type"] == 1:
+                get_components_d(i["components"])
+            elif i["type"] == 4:
+                rdata[i["custom_id"]] = i["value"]
+            elif i["type"] == 3:
+                rdata[i["custom_id"]] = i["values"]
+            else:
+                rdata[i["custom_id"]] = None
+    if obj.data.get("components") is None:
+        return
+    get_components_d(["components"])
+    return rdata
+        
+                
+                
+    return {}

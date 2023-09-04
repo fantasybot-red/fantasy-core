@@ -56,7 +56,7 @@ class Bard(commands.Cog):
     def __init__(self, bot: commands.AutoShardedBot):
         self.bot = bot
         
-        @bot.ev.interaction(name=r"bard_ai\.(\d*)\.(.*)")
+        @bot.ev.interaction(name=r"bard_ai\.(\d+)\.(.+)")
         async def on_delmess(interaction: discord.Interaction, user_id, chat_id):
             if user_id == str(interaction.user.id):
                 await interaction.response.send_modal(Reply_TextBox(chat_id))

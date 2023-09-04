@@ -29,7 +29,7 @@ class getrank(commands.Cog):
     def __init__(self, bot: commands.AutoShardedBot):
         self.bot = bot
         
-        @bot.ev.interaction(name=r"grank_rep\.(\d*)")
+        @bot.ev.interaction(name=r"grank_rep\.(\d+)")
         async def on_grank_rep(interaction: discord.Interaction, user_id):
             if user_id == str(interaction.user.id):
                 embed = discord.Embed(title="Loading Video")
@@ -41,7 +41,7 @@ class getrank(commands.Cog):
             else:
                 await interaction.response.send_message(f'**Nút này không dành cho bạn**', ephemeral=True)
         
-        @bot.ev.interaction(name=r"grank\.(\d*)\.(\d*)")
+        @bot.ev.interaction(name=r"grank\.(\d+)\.(\d+)")
         async def on_grank(interaction: discord.Interaction, user_id, real_rank):
             if user_id == str(interaction.user.id):
                 userrank = self.ranklist[int(interaction.data["values"][0])-1]

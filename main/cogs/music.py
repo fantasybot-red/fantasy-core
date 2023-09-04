@@ -62,7 +62,37 @@ class Music(commands.Cog):
     def __init__(self, bot: commands.AutoShardedBot, sp):
         self.bot = bot
         self.spotify = sp
-    
+        
+        @bot.ev.interaction(name=r"m\.skip")
+        async def on_skip(interaction: discord.Interaction):
+            ctx = await Interactx(interaction, start=False)
+            await self.skip(ctx)
+        
+        @bot.ev.interaction(name=r"m\.previous")
+        async def on_previous(interaction: discord.Interaction):
+            ctx = await Interactx(interaction, start=False)
+            await self.previous(ctx)
+        
+        @bot.ev.interaction(name=r"m\.resume")
+        async def on_resume(interaction: discord.Interaction):
+            ctx = await Interactx(interaction, start=False)
+            await self.resume(ctx)
+        
+        @bot.ev.interaction(name=r"m\.pause")
+        async def on_pause(interaction: discord.Interaction):
+            ctx = await Interactx(interaction, start=False)
+            await self.pause(ctx)
+        
+        @bot.ev.interaction(name=r"m\.volume")
+        async def on_volume(interaction: discord.Interaction):
+            
+        
+        @bot.ev.interaction(name=r"m\.volume_ip")
+        async def on_volume(interaction: discord.Interaction):
+            ctx = await Interactx(interaction, start=False)
+            await self.volume(ctx)
+                
+                
     async def music_autocomplete(self, interaction, current: str):
         current = current.strip()
         if current:

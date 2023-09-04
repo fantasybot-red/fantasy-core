@@ -16,7 +16,7 @@ from sentry_sdk.integrations.aiohttp import AioHttpIntegration
 from datetime import datetime
 from unity.net import net_usage
 from unity.global_ui import delmessbt
-from unity.interactx import Interactx, ratelimit_check
+from unity.interactx import Interactx, ratelimit_check, get_components
 from discord import app_commands
 from jkeydb import database
 from unity.capcha import generate_captcha_image, generate_captcha_text
@@ -469,7 +469,7 @@ async def on_error_tree(interaction: discord.Interaction, error):
                 file = discord.File(fp=outf, filename="log.py")
                 await bot.get_channel(933981853159923752).send(embed=embed, file=file)
 
-@bot.ev.interaction(name=r"delmess\.(\d*)")
+@bot.ev.interaction(name=r"delmess\.(\d+)")
 async def on_delmess(interaction: discord.Interaction, user_id):
     if user_id == str(interaction.user.id):
         await interaction.response.pong()
@@ -483,7 +483,8 @@ async def on_interaction(interaction: discord.Interaction):
         if not interaction.data["custom_id"] in list(bot._connection._view_store._modals.keys()):
             await interaction.response.send_message("**Timeout**", ephemeral=True)
     elif interaction.type == discord.InteractionType.component:
-        out = await bot.ev.trigger(interaction.data["custom_id"], interaction)
+        components = get_components(interaction)
+        out = await bot.ev.trigger(interaction.data["custom_id"], interaction, components)
         if (not interaction.data["custom_id"] in [e[1] for i in bot._connection._view_store._views.values() for e in i.keys()]) and (not out):
             await interaction.response.send_message("**Timeout**", ephemeral=True)
 

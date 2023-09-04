@@ -27,16 +27,16 @@ class Event:
         self.__listeners.pop(name)
 
     # Trigger events.
-    async def trigger(self, name, interaction):
+    async def trigger(self, name, interaction, components):
         run = False
         for reg in self.__listeners:
             pr = re.compile(reg)
-            out = pr.search(name)
+            out = pr.match(name)
             if out:
                 run = True
-                args = re.findall(reg, name)[0]
-                if type(args) is not tuple:
-                    args = [args]
+                args = list(out.groups())
+                if components is not None:
+                    args.insert(0, components)
                 for i in self.__listeners[reg]:
                     asyncio.create_task(i(interaction, *args), name=f"event-{name}-{os.urandom(16).hex()}")
         return run
