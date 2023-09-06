@@ -22,6 +22,7 @@ class Music_bt(discord.ui.View):
         self.add_item(discord.ui.Button(emoji="🔊", custom_id="m.volume_bt"))
         self.add_item(discord.ui.Button(emoji="🎶", label="Now Playing", row=2, custom_id="m.nowplaying"))
         self.add_item(discord.ui.Button(emoji="📜", label="Queue", row=2, custom_id="m.queue"))
+        self.add_item(discord.ui.Button(label="Reload", row=2, custom_id="m.reload"))
         self.add_item(discord.ui.Select(placeholder="Chọn loop mode",
             options=[
                 discord.SelectOption(label='Off', value="off"),

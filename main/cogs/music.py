@@ -70,7 +70,7 @@ class Music(commands.Cog):
             if ctx.voice_client is None:
                 return await ctx.reply("**Bot Đang chả play gì cả**", ephemeral=True)
             if ctx.author.voice.channel != ctx.voice_client.channel:
-                return await ctx.reply("**Bạn không ở chung voice với bot**", ephemeral=True)
+                return await ctx.reply("**Bạn không ở chung voice với bot**", ephemeral=True)          
         
         @bot.ev.interaction(name=r"m\.skip")
         async def on_skip(interaction: discord.Interaction):
@@ -99,6 +99,7 @@ class Music(commands.Cog):
                 embed.add_field(name="Đã skip:", value=f"**[{skipd[0]}]({skipd[1]})**", inline=False)
                 embed.add_field(name="Đang Play", value=f"**[{nextd[0]}]({nextd[1]})**", inline=False)
                 await ctx.reply(embed=embed, ephemeral=True)
+                await self.update_status(interaction.message, musisc_queue[str(ctx.guild.id)].now_playing())
             elif len(queue) == 1:
                 ctx.voice_client.stop()
                 await ctx.reply("**Hết queue rồi tôi thoát đây :>**", ephemeral=True)
@@ -117,11 +118,12 @@ class Music(commands.Cog):
                 skipd = await QueueData(nowp)
                 nextd = await QueueData(prev)
                 text_loop_mode = get_music_loop_text(ctx.guild.id)
+                ctx.voice_client.stop()
                 embed = discord.Embed(title="Previous", description=f"**Loop mode:** {text_loop_mode}\n**Volume:** {musisc_queue[str(ctx.guild.id)].volume}%")
                 embed.add_field(name="Đã previous:", value=f"**[{skipd[0]}]({skipd[1]})**", inline=False)
                 embed.add_field(name="Đang Play", value=f"**[{nextd[0]}]({nextd[1]})**", inline=False)
                 await ctx.reply(embed=embed, ephemeral=True)
-                ctx.voice_client.stop()
+                await self.update_status(interaction.message, musisc_queue[str(ctx.guild.id)].now_playing())
             else:
                 await ctx.reply("**Không có bài trước đấy :/**", ephemeral=True)
         
@@ -137,6 +139,7 @@ class Music(commands.Cog):
             else:
                 ctx.voice_client.pause()
                 await ctx.reply(f"**Đã tạm dừng nhạc {botemoji.yes}**", ephemeral=True)
+            await self.update_status(interaction.message, musisc_queue[str(ctx.guild.id)].now_playing())
         
         @bot.ev.interaction(name=r"m\.nowplaying")
         async def on_nowplaying(interaction: discord.Interaction):
@@ -158,6 +161,7 @@ class Music(commands.Cog):
             except BaseException:
                 pass
             await ctx.send(embed=embed, ephemeral=True)
+            await self.update_status(interaction.message, musisc_queue[str(ctx.guild.id)].now_playing())
         
         @bot.ev.interaction(name=r"m\.queue")
         async def on_queue(interaction: discord.Interaction):
@@ -165,6 +169,15 @@ class Music(commands.Cog):
             if (await check_m(ctx)) is not None:
                 return
             await self.queue.callback(self, ctx)
+            await self.update_status(interaction.message, musisc_queue[str(ctx.guild.id)].now_playing())
+        
+        @bot.ev.interaction(name=r"m\.reload")
+        async def on_reload(interaction: discord.Interaction):
+            ctx = await Interactx(interaction, start=False)
+            if (await check_m(ctx)) is not None:
+                return
+            await interaction.response.defer()
+            await self.update_status(interaction.message, musisc_queue[str(ctx.guild.id)].now_playing())
         
         @bot.ev.interaction(name=r"m\.loop")
         async def on_volume(interaction: discord.Interaction):
@@ -185,8 +198,7 @@ class Music(commands.Cog):
                 set_music_loop(ctx.guild.id, 2)
                 embed = discord.Embed(title="Loop mode: Queue")
             await ctx.reply(embed=embed, ephemeral=True)
-            await interaction.message.edit(content=interaction.user.mention)
-            await interaction.message.edit(content=oldct)
+            await self.update_status(interaction.message, musisc_queue[str(ctx.guild.id)].now_playing())
         
         @bot.ev.interaction(name=r"m\.volume_bt")
         async def on_volume_bt(interaction: discord.Interaction):
@@ -211,7 +223,48 @@ class Music(commands.Cog):
             musisc_queue[str(ctx.guild.id)].volume = data
             ctx.voice_client.source.volume = musisc_queue[str(ctx.guild.id)].get_volume_ff()
             await ctx.reply(f"**Đã set {data}% volume**", ephemeral=True)
-                
+            await self.update_status(interaction.message, musisc_queue[str(ctx.guild.id)].now_playing())
+    
+    async def update_status(self, mess:discord.Message, audio):
+            embed = discord.Embed()
+            if type(audio) is YT_Video:
+                pageurl = audio.watch_url
+                title = audio.title
+                img_url = f"https://img.youtube.com/vi/{audio.video_id}/mqdefault.jpg"
+                async with aiohttp.ClientSession() as s:
+                    async with s.get("https://returnyoutubedislikeapi.com/Votes", params={"videoId": audio.video_id}) as r:
+                        ytdata = await r.json()
+                embed.add_field(name="Likes", value=human_format(ytdata["likes"]))
+                embed.add_field(name="Dislikes", value=human_format(ytdata["dislikes"]))
+                embed.add_field(name="View Count", value=human_format(ytdata["viewCount"]))
+            elif type(audio) is sclib.Track:
+                pageurl = audio.permalink_url
+                img_url = audio.artwork_url
+                title = audio.artist + " - " + audio.title
+                embed.add_field(name="Likes", value=human_format(audio.likes_count))
+                embed.add_field(name="Playback Count", value=human_format(audio.playback_count))
+            elif type(audio) is zingmp3py.zasync.Song:
+                pageurl = audio.link
+                img_url = audio.thumbnail
+                artist = " & ".join([i.name for i in audio.artists])
+                title = artist + " - " + audio.title if artist else audio.title
+            elif type(audio) is zingmp3py.LiveRadio:
+                pageurl = audio.url
+                img_url = audio.thumbnail
+                title = audio.title
+            elif type(audio) is sp.Track:
+                pageurl = audio.spotify_url
+                img_url = audio.coverImage["LARGE"]
+                title = " & ".join([i for i in audio.artist]) + " - " +audio.name
+            elif type(audio) is sp.Episode:
+                pageurl = audio.spotify_url
+                img_url = audio.coverImage["LARGE"]
+                title = audio.name
+            embed.title = "Đang Play:"
+            embed.description = f"**[{title}]({pageurl})**"
+            embed.set_thumbnail(url=img_url)
+            if embed != mess.embeds[0]:
+                await mess.edit(embed=embed)
                 
     async def music_autocomplete(self, interaction, current: str):
         current = current.strip()
@@ -368,6 +421,7 @@ class Music(commands.Cog):
                 try:
                     await mess.edit(embed=embed, view=Music_bt())
                 except BaseException:
+                    traceback.print_exc()
                     pass
         except Exception:
             if mess != None:
@@ -858,7 +912,14 @@ class Music(commands.Cog):
     @app_commands.command(name="player_control", description="mở music player control.")
     async def player(self, interaction: discord.Interaction):
         ctx = await Interactx(interaction)
-        await ctx.send(view=Music_bt())
+        if ctx.author.voice is None:
+            return await ctx.reply("**Bạn chưa vào voice**", ephemeral=True)
+        if ctx.voice_client is None:
+            return await ctx.reply("**Bot Đang chả play gì cả**", ephemeral=True)
+        if ctx.author.voice.channel != ctx.voice_client.channel:
+            return await ctx.reply("**Bạn không ở chung voice với bot**", ephemeral=True)       
+        mess = await ctx.send(view=Music_bt())
+        await self.update_status(mess, musisc_queue[str(ctx.guild.id)].now_playing())
     
     @app_commands.command(name="nowplaying", description="Xem bàì đang play và bài tiếp theo.")
     async def nowplaying(self, interaction: discord.Interaction):
