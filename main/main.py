@@ -507,5 +507,6 @@ async def status_c():
     await asyncio.sleep(10)
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=f"{len(bot.users)} Users"))
     await asyncio.sleep(10)
-        
-bot.run(os.getenv('TOKEN'), reconnect=True)
+
+if __name__ == "__main__":
+    bot.run(os.getenv('TOKEN'), reconnect=True)

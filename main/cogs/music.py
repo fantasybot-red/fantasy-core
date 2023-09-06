@@ -224,6 +224,7 @@ class Music(commands.Cog):
             ctx.voice_client.source.volume = musisc_queue[str(ctx.guild.id)].get_volume_ff()
             await ctx.reply(f"**Đã set {data}% volume**", ephemeral=True)
             await self.update_status(interaction.message, musisc_queue[str(ctx.guild.id)].now_playing())
+
     
     async def update_status(self, mess:discord.Message, audio):
             embed = discord.Embed()

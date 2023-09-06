@@ -38,5 +38,5 @@ class Event:
                 if components is not None:
                     args.insert(0, components)
                 for i in self.__listeners[reg]:
-                    asyncio.create_task(i(interaction, *args), name=f"event-{name}-{os.urandom(16).hex()}")
+                    asyncio.create_task(i(interaction,*args), name=f"event-{name}-{os.urandom(16).hex()}")
         return run
