@@ -192,7 +192,7 @@ class server(commands.Cog):
             return web.FileResponse("./website/favicon.ico")
         
         @self.routes.get('/rlm')
-        async def favicon(request: web.BaseRequest):
+        async def rlm(request: web.BaseRequest):
             return web.FileResponse("./website/fsecurity.html")
 
         @self.routes.get('/support')
