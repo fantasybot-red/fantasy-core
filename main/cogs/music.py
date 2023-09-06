@@ -913,14 +913,9 @@ class Music(commands.Cog):
     @app_commands.command(name="player_control", description="mở music player control.")
     async def player(self, interaction: discord.Interaction):
         ctx = await Interactx(interaction, start=False)
-        if ctx.author.voice is None:
-            return await ctx.reply("**Bạn chưa vào voice**", ephemeral=True)
-        if ctx.voice_client is None:
-            return await ctx.reply("**Bot Đang chả play gì cả**", ephemeral=True)
-        if ctx.author.voice.channel != ctx.voice_client.channel:
-            return await ctx.reply("**Bạn không ở chung voice với bot**", ephemeral=True)       
         mess = await ctx.send(view=Music_bt())
-        await self.update_status(mess, musisc_queue[str(ctx.guild.id)].now_playing())
+        if musisc_queue.get(str(ctx.guild.id)) is not None:
+            await self.update_status(mess, musisc_queue[str(ctx.guild.id)].now_playing())
     
     @app_commands.command(name="nowplaying", description="Xem bàì đang play và bài tiếp theo.")
     async def nowplaying(self, interaction: discord.Interaction):
