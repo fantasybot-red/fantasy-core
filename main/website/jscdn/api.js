@@ -1,7 +1,7 @@
 let urs = new URL(location.href)
 let pathqs = urs.pathname + urs.search + urs.hash
 
-let ratelimit = `<iframe src="https://cdn.folody.xyz/fantasy%20cdn/ratelimit.html" frameborder="0"
+let ratelimit = `<iframe src="/rlm" frameborder="0"
 style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:100%;width:100%;position:absolute;top:0%;left:0px;right:0px;bottom:0px"
 height="100%" width="100%"></iframe>`;
 
