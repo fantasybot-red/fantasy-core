@@ -263,7 +263,8 @@ class Music(commands.Cog):
             embed.title = "Đang Play:"
             embed.description = f"**[{title}]({pageurl})**"
             embed.set_thumbnail(url=img_url)
-            if embed != mess.embeds[0]:
+            emb = None if len(mess.embeds) == 0 else mess.embeds[0]
+            if embed != emb:
                 await mess.edit(embed=embed)
                 
     async def music_autocomplete(self, interaction, current: str):
@@ -911,7 +912,7 @@ class Music(commands.Cog):
     
     @app_commands.command(name="player_control", description="mở music player control.")
     async def player(self, interaction: discord.Interaction):
-        ctx = await Interactx(interaction)
+        ctx = await Interactx(interaction, start=False)
         if ctx.author.voice is None:
             return await ctx.reply("**Bạn chưa vào voice**", ephemeral=True)
         if ctx.voice_client is None:
