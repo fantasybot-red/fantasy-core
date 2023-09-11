@@ -20,7 +20,7 @@ from discord import FFmpegPCMAudio
 from discord.ext import commands
 from discord import app_commands
 from unity.interactx import Interactx
-from unity.global_ui import Music_Volume, Music_bt
+from unity.global_ui import Input_Modal, Music_bt
 
 scclient = sclib.SoundcloudAPI()
 zclient = zingmp3py.ZingMp3Async()
@@ -205,7 +205,12 @@ class Music(commands.Cog):
             ctx = await Interactx(interaction, start=False)
             if (await check_m(ctx)) is not None:
                 return
-            await interaction.response.send_modal(Music_Volume())
+            await interaction.response.send_modal(Input_Modal(title="Set Volume (từ 0 -> 100)", 
+                                                              custom_id="m.volume_md",
+                                                              custom_id_input="m.voice_ip",
+                                                              label="Số phần trăm volume",
+                                                              min_length=1, 
+                                                              max_length=3))
             
         
         @bot.ev.interaction(name=r"m\.volume_md")

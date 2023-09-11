@@ -31,10 +31,10 @@ class Music_bt(discord.ui.View):
             ], 
             custom_id="m.loop", row=3))
 
-class Music_Volume(discord.ui.Modal):
-    def __init__(self):
-        super().__init__(timeout=0, title="Set Volume (từ 0 -> 100)", custom_id="m.volume_md")
-        self.add_item(discord.ui.TextInput(custom_id="m.voice_ip", label="Số phần trăm volume", min_length=1, max_length=3))
+class Input_Modal(discord.ui.Modal):
+    def __init__(self, *, title, custom_id, custom_id_input, label, style=discord.TextStyle.short, min_length=None, max_length=None, placeholder=None):
+        super().__init__(timeout=0, title=title, custom_id=custom_id)
+        self.add_item(discord.ui.TextInput(custom_id=custom_id_input, style=style, placeholder=placeholder, label=label, min_length=min_length, max_length=max_length))
         
     
   
