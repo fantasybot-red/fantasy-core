@@ -38,7 +38,7 @@ class vh(commands.Cog):
             
             if after.channel is not None:
                 with database(f"./data/voicehub/{member.guild.id}", self.bot.db) as db:
-                    if str(after.channel.id) in db.keys():
+                    if str(after.channel.id) in db.keys() and (not member.bot):
                         edit_dict = {}
                         main_cf = db[str(after.channel.id)]
                         voicename = member.name if main_cf.get("name") is None else string.Template(main_cf["name"]).safe_substitute(name=member.name, nick=member.nick or member.global_name or member.name)
