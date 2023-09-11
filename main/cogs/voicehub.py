@@ -186,7 +186,7 @@ class vh(commands.Cog):
             embed = discord.Embed(title=f"Đã set VoiceHub bitrate thành {bitrate}")
             await ctx.send(embed=embed)
     
-    @edit_vh_g.command(name="full_control", description="Cho phép chủ kênh có mọi quền điều khiển temp voice của họ")
+    @edit_vh_g.command(name="full_control", description="Cho phép chủ kênh có mọi quyền kiểm soát temp voice của họ")
     @app_commands.describe(channel="Kênh VoiceHub", var="on/off")
     @app_commands.choices(var=[
     app_commands.Choice(name='On', value=1),
