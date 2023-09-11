@@ -302,9 +302,11 @@ class vh(commands.Cog):
             embed = discord.Embed(title=f"Đã set slowmode thành {seconds}s")
             await ctx.send(embed=embed)
             
-    voice_g = app_commands.Group(name="voice_edit", description="tempvoice command")
+    voice_g = app_commands.Group(name="tempvoice", description="tempvoice command")
     
-    @voice_g.command(name="lock", description="Set kênh của bạn thành lock")
+    voice_edit_g = app_commands.Group(name="edit", description="tempvoice edit command", parent=voice_g)
+    
+    @voice_edit_g.command(name="lock", description="Set kênh của bạn thành lock")
     @app_commands.describe(channel="Kênh Temp", var="on/off")
     @app_commands.choices(var=[
     app_commands.Choice(name='On', value=1),
@@ -318,7 +320,7 @@ class vh(commands.Cog):
             embed = discord.Embed(title=f"Đã set lock thành {var.name}")
             await ctx.send(embed=embed)
     
-    @voice_g.command(name="nsfw", description="Set kênh của bạn thành nsfw")
+    @voice_edit_g.command(name="nsfw", description="Set kênh của bạn thành nsfw")
     @app_commands.describe(channel="Kênh Temp", var="on/off")
     @app_commands.choices(var=[
     app_commands.Choice(name='On', value=1),
@@ -332,7 +334,7 @@ class vh(commands.Cog):
             embed = discord.Embed(title=f"Đã set nsfw thành {var.name}")
             await ctx.send(embed=embed)
             
-    @voice_g.command(name="bitrate", description="Chỉnh Bitrate của TempVoice")
+    @voice_edit_g.command(name="bitrate", description="Chỉnh Bitrate của TempVoice")
     @app_commands.describe(channel="Kênh Temp", bitrate="Số Bitrate muốn set")
     async def v_bitrate(self, interaction: discord.Interaction, channel:typing.Union[discord.VoiceChannel, discord.StageChannel], bitrate:app_commands.Range[int, 8, 384]):
         ctx = await Interactx(interaction)
@@ -352,7 +354,7 @@ class vh(commands.Cog):
             embed = discord.Embed(title=f"Đã set VoiceHub bitrate thành {bitrate}")
             await ctx.send(embed=embed) 
 
-    @voice_g.command(name="user_limit", description="Chỉnh TempVoice user limit")
+    @voice_edit_g.command(name="user_limit", description="Chỉnh TempVoice user limit")
     @app_commands.describe(channel="Kênh Temp", user_limit="Số lương người muốn giới hạn (0 = ∞)")
     async def v_user_limit(self, interaction: discord.Interaction, channel:typing.Union[discord.VoiceChannel, discord.StageChannel], user_limit:app_commands.Range[int, 0, 10000]):
         ctx = await Interactx(interaction)
@@ -370,7 +372,7 @@ class vh(commands.Cog):
             embed = discord.Embed(title=f"Đã set user limit thành {user_limit}")
             await ctx.send(embed=embed)
     
-    @voice_g.command(name="rename", description="Chỉnh tên TempVoice")
+    @voice_edit_g.command(name="rename", description="Chỉnh tên TempVoice")
     @app_commands.describe(channel="Kênh Temp", name="Tên mới của kênh")
     async def v_rename(self, interaction: discord.Interaction, channel:typing.Union[discord.VoiceChannel, discord.StageChannel], name:str):
         ctx = await Interactx(interaction)
@@ -389,7 +391,7 @@ class vh(commands.Cog):
             embed = discord.Embed(title=f"Đã set tên kênh thành {channel.mention}")
             await ctx.send(embed=embed)
             
-    @voice_g.command(name="slowmode", description="Chỉnh slowmode của TempVoice")
+    @voice_edit_g.command(name="slowmode", description="Chỉnh slowmode của TempVoice")
     @app_commands.describe(channel="Kênh Temp")
     async def v_slowmode(self, interaction: discord.Interaction, channel:typing.Union[discord.VoiceChannel, discord.StageChannel], seconds:app_commands.Range[int, 0, 21600]):
         ctx = await Interactx(interaction)
