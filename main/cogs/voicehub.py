@@ -306,6 +306,29 @@ class vh(commands.Cog):
     
     voice_edit_g = app_commands.Group(name="edit", description="tempvoice edit command", parent=voice_g)
     
+    @voice_g.command(name="claim", description="claim kênh thành của bạn")
+    async def v_claim(self, interaction: discord.Interaction, channel:typing.Union[discord.VoiceChannel, discord.StageChannel]):
+        ctx = await Interactx(interaction)
+        with database(f"./data/tempvoice/{ctx.guild.id}", self.bot.db) as db:
+            if await self.check_temp(ctx, channel, db):
+                return
+            old_user = ctx.guild.get_member(db["owner"])
+            if old_user not in channel.members:
+                embed = discord.Embed(title=f"Chủ kênh vẫn còn trong ở trong kênh")
+                await ctx.send(embed=embed)
+                return
+            if ctx.author not in channel.members:
+                embed = discord.Embed(title=f"Bạn không ở trong kênh này")
+                await ctx.send(embed=embed)
+                return
+            await channel.set_permissions(old_user, overwrite=None)
+            pr = {}
+            if db["prcf"].get("full_control"):
+                pr["manage_permissions"] = True
+            await channel.set_permissions(ctx.author, view_channel=True, connect=True, manage_channels=True, mute_members=True, move_members=True, **pr)
+            embed = discord.Embed(title=f"Bạn đã thành chủ của kênh này")
+            await ctx.send(embed=embed)
+    
     @voice_edit_g.command(name="lock", description="Set kênh của bạn thành lock")
     @app_commands.describe(channel="Kênh Temp", var="on/off")
     @app_commands.choices(var=[
