@@ -312,20 +312,23 @@ class vh(commands.Cog):
         with database(f"./data/tempvoice/{ctx.guild.id}", self.bot.db) as db:
             if await self.check_temp(ctx, channel, db):
                 return
-            old_user = ctx.guild.get_member(db["owner"])
-            if old_user not in channel.members:
-                embed = discord.Embed(title=f"Chủ kênh vẫn còn trong ở trong kênh")
-                await ctx.send(embed=embed)
-                return
+            old_user = ctx.guild.get_member(db[str(channel.id)]["owner"])
             if ctx.author not in channel.members:
                 embed = discord.Embed(title=f"Bạn không ở trong kênh này")
                 await ctx.send(embed=embed)
                 return
+            if old_user in channel.members:
+                embed = discord.Embed(title=f"Chủ kênh vẫn còn trong ở trong kênh")
+                await ctx.send(embed=embed)
+                return
             await channel.set_permissions(old_user, overwrite=None)
             pr = {}
-            if db["prcf"].get("full_control"):
+            if db[str(channel.id)]["prcf"].get("full_control"):
                 pr["manage_permissions"] = True
             await channel.set_permissions(ctx.author, view_channel=True, connect=True, manage_channels=True, mute_members=True, move_members=True, **pr)
+            preconfig = db[str(channel.id)]
+            preconfig["owner"] = ctx.author.id
+            db[str(channel.id)] = preconfig
             embed = discord.Embed(title=f"Bạn đã thành chủ của kênh này")
             await ctx.send(embed=embed)
     
