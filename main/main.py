@@ -226,7 +226,7 @@ async def on_message(message: discord.Message):
         return
 
     if message.content == f"<@{bot.user.id}>" or message.content == f"<@!{bot.user.id}>":
-        await message.reply(f'**Hi tôi là {bot.user.mention} xin hay dùng `/` để dùng commands của tôi nhé nhé 😊**')
+        await message.reply(f'**Hi tôi là {bot.user.mention} xin hay dùng `/` để dùng commands của tôi nhé 😊**')
     
 
     with database(f"./data/afk/{message.guild.id}", bot.db) as db:
