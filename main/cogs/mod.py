@@ -46,7 +46,7 @@ class mod(commands.Cog):
         mb = ctx.guild.get_member(user.id)
         try:
             await ctx.guild.fetch_ban(user)
-            await mess.edit(f"**{botemoji.no} Người này đã bị ban từ trước rồi**")
+            await mess.edit(content=f"**{botemoji.no} Người này đã bị ban từ trước rồi**")
             return
         except discord.NotFound:
             pass
@@ -96,7 +96,7 @@ class mod(commands.Cog):
         try:
             await ctx.guild.fetch_ban(user)
         except discord.NotFound:
-            await mess.edit(f"**{botemoji.no} Người này không bị ban**")
+            await mess.edit(content=f"**{botemoji.no} Người này không bị ban**")
             return
         async def run():
             banuserout = False
