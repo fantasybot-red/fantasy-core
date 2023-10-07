@@ -43,7 +43,7 @@ class mod(commands.Cog):
         ctx = await Interactx(interaction)
         mess = await ctx.send(f"**Đang Check User**")
         dms = delete_message_days * 86400
-        mb = ctx.guild.get_member(user.id)
+        mb = ctx.guild.get_member(user.id) 
         try:
             await ctx.guild.fetch_ban(user)
             await mess.edit(content=f"**{botemoji.no} Người này đã bị ban từ trước rồi**")
