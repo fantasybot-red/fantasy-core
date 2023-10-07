@@ -139,11 +139,9 @@ class mod(commands.Cog):
         await view.wait()
         if view.value is None:
             await mess.edit(content=f"**{botemoji.no} Lệnh bị hủy do không có phản hồi**", view=None)
-    
-    timeout_g = app_commands.Group(name="timeout", description="timeout command", default_permissions=discord.Permissions(moderate_members=True))
             
-    @timeout_g.command(name="set", description="Set timeout cho menber của bạn")
-    async def timeout_set(self, interaction: discord.Interaction, member: discord.Member, reason:str=nors, days:int=0, hours:int=0, minutes:int=0, seconds:int=0):
+    @app_commands.command(name="timeout", description="Set timeout cho menber của bạn")
+    async def timeout(self, interaction: discord.Interaction, member: discord.Member, reason:str=nors, days:int=0, hours:int=0, minutes:int=0, seconds:int=0):
         ctx = await Interactx(interaction)
         stime = datetime.timedelta(days=days, hours=hours, minutes=minutes, seconds=seconds)
         member = await ctx.guild.fetch_member(member.id)
@@ -174,8 +172,8 @@ class mod(commands.Cog):
         if view.value is None:
             await mess.edit(content=f"**{botemoji.no} Lệnh bị hủy do không có phản hồi**", view=None)
         
-    @timeout_g.command(name="remove", description="Bỏ timeout cho menber của bạn")
-    async def timeout_remove(self, interaction: discord.Interaction, member: discord.Member, reason:str=nors):
+    @app_commands.command(name="untimeout", description="Bỏ timeout cho menber của bạn")
+    async def untimeout(self, interaction: discord.Interaction, member: discord.Member, reason:str=nors):
         ctx = await Interactx(interaction)
         member = await ctx.guild.fetch_member(member.id)
         mess = await ctx.send(f"**Đang Check User**")
