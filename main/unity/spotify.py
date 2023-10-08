@@ -65,6 +65,7 @@ class Spotify:
             async with s.get(f"/api/sp/loadmeta/{uri}") as r:
                 if r.ok:
                     data = await r.json()
+                    outdata = None
                     stype = data["type"]
                     if stype == "track":
                         outdata = Track(data, self)
