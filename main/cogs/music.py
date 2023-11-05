@@ -413,12 +413,12 @@ class Music(commands.Cog):
                 title = " & ".join([i for i in audio.artist]) + " - " +audio.name
                 if not audio.is_playable:
                     raise PermissionError("not playable")
-                URL = f"{os.getenv('MUISC_API_URL')}/api/sp/{audio.spotify_uri}?auth={os.getenv('MUISC_API_AUTH')}"
+                URL = f"{os.getenv('MUISC_AUDIO_URL')}/api/sp/{audio.spotify_uri}?auth={os.getenv('MUISC_API_AUTH')}"
             elif type(audio) is sp.Episode:
                 pageurl = audio.spotify_url
                 img_url = audio.coverImage["LARGE"]
                 title = audio.name
-                URL = f"{os.getenv('MUISC_API_URL')}/api/sp/{audio.spotify_uri}?auth={os.getenv('MUISC_API_AUTH')}"
+                URL = f"{os.getenv('MUISC_AUDIO_URL')}/api/sp/{audio.spotify_uri}?auth={os.getenv('MUISC_API_AUTH')}"
             url = discord.PCMVolumeTransformer(FFmpegPCMAudio(URL, **FFMPEG_OPTIONS), volume=musisc_queue[str(ctx.guild.id)].get_volume_ff())
             ctx.voice_client.play(url, after=lambda e: asyncio.run_coroutine_threadsafe(self.autoskip(e, ctx), self.bot.loop))
             embed.title = "Đang Play:"
