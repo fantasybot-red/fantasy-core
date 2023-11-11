@@ -446,7 +446,6 @@ class Music(commands.Cog):
             traceback.print_exc()
 
     async def autoskip(self, e, ctx, mess):
-        print(e)
         if e:
             if mess != None:
                 try:
