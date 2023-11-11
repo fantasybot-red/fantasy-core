@@ -11,6 +11,7 @@ import psutil
 import uuid
 import platform
 import sentry_sdk
+import songbird
 from unity.event import Event
 from sentry_sdk.integrations.aiohttp import AioHttpIntegration
 from datetime import datetime
@@ -44,6 +45,7 @@ bot = commands.AutoShardedBot(
     command_prefix=bot_prefix, intents=intents, shard_count=shard , help_command=None)
 bot.db = redis.Redis(host='localhost', port=6379, db=0, password=os.getenv("REDIS_PASS"), username="default")
 bot.ev = Event()
+bot.voice_manager = songbird.NodeManager()
 startdate = datetime.now()
 
 @bot.tree.command(name="server", description="Hiển thị thông tin server.")
@@ -354,6 +356,7 @@ async def setup_hook():
         print("sync slash command done")
     except Exception:
         traceback.print_exc()
+    await bot.voice_manager.add_nodes(["http://localhost:1999", os.getenv('MUISC_PLAYER_AUTH')])
     
 @bot.event
 async def on_ready():
