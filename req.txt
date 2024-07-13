@@ -1,0 +1,23 @@
+discord.py @ git+https://github.com/Rapptz/discord.py
+soundcloud-lib @ git+https://github.com/thedtvn/soundcloud-lib.git
+zingmp3py @ git+https://github.com/thedtvn/zingmp3py.git
+songbird-client.py @ git+https://github.com/fantasybot-red/songbird-client.py.git
+cryptography
+PyNaCl
+emoji
+python-dotenv
+redis
+Pillow
+numpy
+psutil
+sentry-sdk
+pylatexenc
+markdownify
+gpytranslate
+pyjwt
+demjson3
+
+# check code typing
+
+flake8
+bandit
